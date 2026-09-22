@@ -703,7 +703,7 @@ async function callGemini(userText, attachments) {
 
   const body = {
     model,
-    system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    system_instruction: SYSTEM_PROMPT,
     input: content,
     generation_config: { max_output_tokens: 4096 }
   };
