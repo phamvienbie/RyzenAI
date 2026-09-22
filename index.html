@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ryzen Plus 1.2</title>
+<style>
+  :root {
+    --bg: #131314;
+    --surface: #1e1f20;
+    --surface-hi: #2a2b2d;
+    --border: #3c3d3f;
+    --text: #e3e3e3;
+    --text-dim: #9aa0a6;
+    --accent: #a8c7fa;
+    --accent-grad-a: #4c8dff;
+    --accent-grad-b: #9d6bff;
+    --accent-grad-c: #ff6b9d;
+    --radius-lg: 24px;
+    --radius-md: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Google Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { display: flex; flex-direction: column; }
+
+  /* ---- Top bar ---- */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    flex-shrink: 0;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: conic-gradient(from 180deg, var(--accent-grad-a), var(--accent-grad-b), var(--accent-grad-c), var(--accent-grad-a));
+    flex-shrink: 0;
+  }
+  .brand-name {
+    font-size: 20px;
+    letter-spacing: -0.2px;
+    font-weight: 400;
+    background: linear-gradient(90deg, #a8c7fa, #d6b4ff, #ffb4cd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .brand-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-left: 2px;
+  }
+  .icon-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .icon-btn:hover { background: var(--surface); color: var(--text); }
+  .icon-btn svg { width: 18px; height: 18px; }
+
+  /* ---- Main scroll area ---- */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 8px;
+  }
+  main::-webkit-scrollbar { width: 8px; }
+  main::-webkit-scrollbar-thumb { background: #2f3032; border-radius: 8px; }
+
+  .thread {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 12px;
+  }
+
+  /* ---- Empty state (like Gemini's greeting) ---- */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px 4px;
+  }
+  .empty-state h1 {
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1.25;
+    margin: 0;
+    background: linear-gradient(90deg, #a8c7fa, #d6b4ff, #ffb4cd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .empty-state p {
+    font-size: 15px;
+    color: var(--text-dim);
+    margin-top: 10px;
+  }
+
+  /* ---- Messages ---- */
+  .row { display: flex; gap: 14px; align-items: flex-start; }
+  .row.user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .avatar.bot {
+    background: conic-gradient(from 180deg, var(--accent-grad-a), var(--accent-grad-b), var(--accent-grad-c), var(--accent-grad-a));
+  }
+  .avatar.user {
+    background: var(--surface-hi);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .bubble-wrap { max-width: 82%; display: flex; flex-direction: column; }
+  .row.user .bubble-wrap { align-items: flex-end; }
+
+  .bubble {
+    font-size: 15px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .row.bot .bubble { color: var(--text); padding-top: 2px; }
+  .row.user .bubble {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+  }
+
+  .row.error .bubble {
+    color: #f28b82;
+    font-size: 13.5px;
+    background: #3c2523;
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+  }
+
+  .typing-row { display: flex; gap: 14px; align-items: center; }
+  .typing-dots { display: flex; gap: 5px; padding-top: 4px; }
+  .typing-dots span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    animation: blink 1.3s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.18s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.36s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+
+  /* ---- Input dock ---- */
+  .dock {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 10px 16px 20px;
+    flex-shrink: 0;
+  }
+  form#inputBar {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 10px 10px 10px 20px;
+    transition: border-color 0.15s;
+  }
+  form#inputBar:focus-within { border-color: #5f6368; }
+
+  #userInput {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 15px;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    max-height: 140px;
+    padding: 8px 0;
+    line-height: 1.5;
+  }
+  #userInput::placeholder { color: var(--text-dim); }
+
+  #sendBtn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: var(--surface-hi);
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+  #sendBtn:not(:disabled) {
+    background: linear-gradient(135deg, var(--accent-grad-a), var(--accent-grad-b));
+    color: #131314;
+  }
+  #sendBtn:disabled { cursor: default; }
+  #sendBtn svg { width: 18px; height: 18px; }
+
+  #attachBtn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #attachBtn:hover { background: var(--surface-hi); color: var(--text); }
+  #attachBtn svg { width: 20px; height: 20px; }
+
+  .dock-inner { width: 100%; max-width: 720px; }
+  .attach-preview {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 4px 10px;
+  }
+  .attach-chip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 6px 10px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    max-width: 200px;
+  }
+  .attach-chip img {
+    width: 32px; height: 32px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+  .attach-chip .fname {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .attach-chip .remove-chip {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .attach-chip .remove-chip:hover { color: var(--text); }
+
+  .msg-attachments {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .msg-attachments img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 12px;
+    display: block;
+  }
+  .msg-file-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-hi);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    max-width: 720px;
+    margin: 0 auto;
+    padding-bottom: 2px;
+  }
+
+  /* ---- Settings modal ---- */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+  }
+  .modal h3 { margin: 0 0 8px; font-size: 17px; font-weight: 500; }
+  .modal p { margin: 0 0 16px; font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .modal input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 16px;
+    font-family: inherit;
+  }
+  .modal input:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .modal-actions button {
+    border: none;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+  }
+  .btn-save {
+    background: linear-gradient(135deg, var(--accent-grad-a), var(--accent-grad-b));
+    color: #131314;
+  }
+  .btn-cancel { background: var(--surface-hi); color: var(--text); }
+  .modal a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark"></div>
+    <span class="brand-name">Ryzen Plus</span>
+    <span class="brand-sub">1.2</span>
+  </div>
+  <button class="icon-btn" id="openSettings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    API Key
+  </button>
+</header>
+
+<main id="main">
+  <div class="empty-state" id="emptyState">
+    <h1>Chào bạn, mình là Ryzen Plus 1.2</h1>
+    <p>Hỏi mình bất cứ điều gì nhé.</p>
+  </div>
+  <div class="thread" id="thread"></div>
+</main>
+
+<div class="dock">
+  <div class="dock-inner">
+    <div class="attach-preview" id="attachPreview"></div>
+    <form id="inputBar">
+      <button id="attachBtn" type="button" title="Đính kèm ảnh hoặc tệp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21.44 11.05l-9.19 9.19a5 5 0 01-7.07-7.07l9.19-9.19a3.5 3.5 0 015 5l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+      </button>
+      <input type="file" id="fileInput" multiple hidden accept="image/*,.pdf,.txt,.csv,.json,.md">
+      <textarea id="userInput" rows="1" placeholder="Nhắn gì đó cho Ryzen Plus" autocomplete="off"></textarea>
+      <button id="sendBtn" type="submit" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+<div class="disclaimer">Ryzen Plus có thể trả lời sai. Hãy kiểm tra lại các thông tin quan trọng.</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <h3>Gemini API Key</h3>
+    <p>Key chỉ lưu trên trình duyệt của bạn (localStorage), không gửi đi đâu khác ngoài Google. Lấy key tại <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>.</p>
+    <input type="password" id="apiKeyInput" placeholder="Dán API key vào đây...">
+    <div class="modal-actions">
+      <button class="btn-cancel" type="button" id="cancelSettings">Đóng</button>
+      <button class="btn-save" type="button" id="saveSettings">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const BOT_NAME = "Ryzen Plus 1.2";
+const SYSTEM_PROMPT = `Bạn tên là "${BOT_NAME}". Nếu người dùng hỏi bạn là ai, bạn dùng model gì, hoặc AI gì, hãy trả lời rằng bạn là "${BOT_NAME}", một trợ lý AI. Đừng nhắc đến Google, Gemini, hay bất kỳ nhà cung cấp mô hình nền tảng nào — đó là chi tiết kỹ thuật nội bộ không cần tiết lộ.
+Nếu người dùng hỏi ai đã tạo ra bạn / lập trình bạn, hãy trả lời rằng người tạo ra bạn là Phạm Xuân Viên, hiện đang học lớp 11B2 tại Trung tâm GDNN-GDTX khu vực 3 Long Khánh, Đồng Nai. Chỉ nhắc chi tiết này khi được hỏi trực tiếp về người tạo, không tự chèn vào các câu trả lời khác.
+Người dùng có thể gửi kèm ảnh hoặc tệp trong cuộc trò chuyện — hãy xem và phản hồi nội dung đó khi có.
+Trả lời tự nhiên, ngắn gọn, thân thiện, bằng tiếng Việt trừ khi người dùng dùng ngôn ngữ khác.`;
+
+const mainEl = document.getElementById('main');
+const threadEl = document.getElementById('thread');
+const emptyState = document.getElementById('emptyState');
+const form = document.getElementById('inputBar');
+const input = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const apiKeyInput = document.getElementById('apiKeyInput');
+
+let history = [];
+let pendingAttachments = []; // {name, mimeType, data (base64), previewUrl}
+
+const attachBtn = document.getElementById('attachBtn');
+const fileInput = document.getElementById('fileInput');
+const attachPreview = document.getElementById('attachPreview');
+
+attachBtn.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', async () => {
+  const files = Array.from(fileInput.files || []);
+  for (const file of files) {
+    if (file.size > 15 * 1024 * 1024) {
+      addErrorRow(`Tệp "${file.name}" quá lớn (tối đa 15MB).`);
+      continue;
+    }
+    const base64 = await fileToBase64(file);
+    const item = {
+      name: file.name,
+      mimeType: file.type || 'application/octet-stream',
+      data: base64,
+      previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
+    };
+    pendingAttachments.push(item);
+  }
+  fileInput.value = '';
+  renderAttachPreview();
+  updateSendState();
+});
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderAttachPreview() {
+  attachPreview.innerHTML = '';
+  pendingAttachments.forEach((att, idx) => {
+    const chip = document.createElement('div');
+    chip.className = 'attach-chip';
+    chip.innerHTML = `
+      ${att.previewUrl ? `<img src="${att.previewUrl}">` : ''}
+      <span class="fname">${att.name}</span>
+      <button type="button" class="remove-chip">✕</button>`;
+    chip.querySelector('.remove-chip').addEventListener('click', () => {
+      pendingAttachments.splice(idx, 1);
+      renderAttachPreview();
+      updateSendState();
+    });
+    attachPreview.appendChild(chip);
+  });
+}
+
+function updateSendState() {
+  sendBtn.disabled = input.value.trim().length === 0 && pendingAttachments.length === 0;
+}
+
+function getKey() { return localStorage.getItem('ryzen_gemini_key') || ''; }
+function setKey(k) { localStorage.setItem('ryzen_gemini_key', k); }
+
+function openModal() { apiKeyInput.value = getKey(); modalBackdrop.classList.add('show'); }
+function closeModal() { modalBackdrop.classList.remove('show'); }
+
+document.getElementById('openSettings').addEventListener('click', openModal);
+document.getElementById('cancelSettings').addEventListener('click', closeModal);
+document.getElementById('saveSettings').addEventListener('click', () => {
+  setKey(apiKeyInput.value.trim());
+  closeModal();
+});
+modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeModal(); });
+
+function hideEmptyState() {
+  if (emptyState.style.display !== 'none') emptyState.style.display = 'none';
+}
+
+function addUserRow(text, attachments) {
+  hideEmptyState();
+  const row = document.createElement('div');
+  row.className = 'row user';
+  let attHtml = '';
+  if (attachments && attachments.length) {
+    attHtml = '<div class="msg-attachments">' + attachments.map(a => {
+      if (a.previewUrl) return `<img src="${a.previewUrl}">`;
+      return `<div class="msg-file-chip">📎 ${a.name}</div>`;
+    }).join('') + '</div>';
+  }
+  row.innerHTML = `
+    <div class="avatar user">Bạn</div>
+    <div class="bubble-wrap">${attHtml}<div class="bubble"></div></div>`;
+  row.querySelector('.bubble').textContent = text;
+  threadEl.appendChild(row);
+  scrollDown();
+}
+
+function addBotRow(text) {
+  hideEmptyState();
+  const row = document.createElement('div');
+  row.className = 'row bot';
+  row.innerHTML = `
+    <div class="avatar bot"></div>
+    <div class="bubble-wrap"><div class="bubble"></div></div>`;
+  row.querySelector('.bubble').textContent = text;
+  threadEl.appendChild(row);
+  scrollDown();
+}
+
+function addErrorRow(text) {
+  hideEmptyState();
+  const row = document.createElement('div');
+  row.className = 'row error';
+  row.innerHTML = `<div class="bubble-wrap" style="max-width:100%"><div class="bubble"></div></div>`;
+  row.querySelector('.bubble').textContent = text;
+  threadEl.appendChild(row);
+  scrollDown();
+}
+
+function showTyping() {
+  const row = document.createElement('div');
+  row.className = 'row bot typing-row';
+  row.id = 'typingRow';
+  row.innerHTML = `<div class="avatar bot"></div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  threadEl.appendChild(row);
+  scrollDown();
+}
+function hideTyping() {
+  const el = document.getElementById('typingRow');
+  if (el) el.remove();
+}
+
+function scrollDown() { mainEl.scrollTop = mainEl.scrollHeight; }
+
+async function callGemini(userText, attachments) {
+  const key = getKey();
+  if (!key) { openModal(); throw new Error('NO_KEY'); }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${encodeURIComponent(key)}`;
+
+  const parts = [];
+  if (userText) parts.push({ text: userText });
+  (attachments || []).forEach(a => {
+    parts.push({ inline_data: { mime_type: a.mimeType, data: a.data } });
+  });
+
+  history.push({ role: 'user', parts });
+
+  const body = {
+    system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    contents: history,
+    generationConfig: { temperature: 0.9, maxOutputTokens: 1024 }
+  };
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`API lỗi (${res.status}): ${errText.slice(0, 200)}`);
+  }
+
+  const data = await res.json();
+  const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '(không có phản hồi)';
+  history.push({ role: 'model', parts: [{ text: reply }] });
+  return reply;
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  const attachments = pendingAttachments.slice();
+  if (!text && attachments.length === 0) return;
+
+  addUserRow(text, attachments);
+  input.value = '';
+  input.style.height = 'auto';
+  pendingAttachments = [];
+  renderAttachPreview();
+  sendBtn.disabled = true;
+  showTyping();
+
+  try {
+    const reply = await callGemini(text, attachments);
+    hideTyping();
+    addBotRow(reply);
+  } catch (err) {
+    hideTyping();
+    if (err.message !== 'NO_KEY') {
+      addErrorRow(err.message);
+    } else {
+      history.pop();
+    }
+  } finally {
+    updateSendState();
+    input.focus();
+  }
+});
+
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    form.requestSubmit();
+  }
+});
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+  updateSendState();
+});
+
+if (!getKey()) {
+  setTimeout(openModal, 400);
+}
+</script>
+</body>
+</html>
