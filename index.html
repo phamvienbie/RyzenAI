@@ -40,14 +40,17 @@
   header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 20px;
+    gap: 8px;
+    padding: 12px 14px;
     flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
   }
   .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    min-width: 0;
+    flex-shrink: 1;
   }
   .brand-mark {
     width: 30px;
@@ -81,13 +84,16 @@
     filter: drop-shadow(0 0 6px rgba(157, 107, 255, 0.45));
   }
   .brand-name {
-    font-size: 20px;
+    font-size: 17px;
     letter-spacing: -0.3px;
     font-weight: 700;
     background: linear-gradient(90deg, #a8c7fa, #d6b4ff, #ffb4cd);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .brand-sub {
     font-size: 13px;
@@ -95,21 +101,23 @@
     margin-left: 2px;
   }
   .icon-btn {
-    margin-left: auto;
     background: none;
     border: none;
     color: var(--text-dim);
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border-radius: 20px;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
     cursor: pointer;
     font-size: 13px;
     font-family: inherit;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
   }
   .icon-btn:hover { background: var(--surface); color: var(--text); }
-  .icon-btn svg { width: 18px; height: 18px; }
+  .icon-btn svg { width: 19px; height: 19px; }
 
   /* ---- Main scroll area ---- */
   main {
@@ -415,7 +423,9 @@
   .header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
   }
   .model-select {
     appearance: none;
@@ -424,17 +434,20 @@
     color: var(--text);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 8px 14px;
+    padding: 7px 26px 7px 12px;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 500;
     cursor: pointer;
     outline: none;
+    max-width: 108px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa0a6' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
     background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 16px;
-    padding-right: 32px;
+    background-position: right 8px center;
+    background-size: 14px;
   }
   .model-select:hover { background-color: var(--border); }
   .modal-model-select {
@@ -455,13 +468,12 @@
   </div>
   <div class="header-right">
     <select class="model-select" id="modelSelect" title="Chọn model">
-      <option value="gemini-flash-latest">Ryzen Flash</option>
-      <option value="gemini-flash-lite-latest">Ryzen Flash Lite</option>
-      <option value="gemini-pro-latest">Ryzen Pro</option>
+      <option value="gemini-3.8-flash">Flash</option>
+      <option value="gemini-3.1-flash-lite">Flash Lite</option>
+      <option value="gemini-3.1-pro-preview">Pro</option>
     </select>
-    <button class="icon-btn" id="openSettings">
+    <button class="icon-btn" id="openSettings" title="Cài đặt">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      API Key
     </button>
   </div>
 </header>
@@ -494,15 +506,12 @@
 
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal">
-    <h3>Gemini API Key</h3>
-    <p>Key chỉ lưu trên trình duyệt của bạn (localStorage), không gửi đi đâu khác ngoài Google. Lấy key tại <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>.</p>
-    <input type="password" id="apiKeyInput" placeholder="Dán API key vào đây...">
-    <h3 style="margin-top:20px;">Model</h3>
+    <h3>Model</h3>
     <p>Chọn model dùng cho các câu trả lời.</p>
     <select class="model-select modal-model-select" id="modalModelSelect">
-      <option value="gemini-flash-latest">Ryzen Flash — nhanh, cân bằng</option>
-      <option value="gemini-flash-lite-latest">Ryzen Flash Lite — nhanh nhất, nhẹ</option>
-      <option value="gemini-pro-latest">Ryzen Pro — thông minh nhất, chậm hơn</option>
+      <option value="gemini-3.8-flash">Ryzen Flash — nhanh, cân bằng (Gemini 3.8)</option>
+      <option value="gemini-3.1-flash-lite">Ryzen Flash Lite — nhanh nhất, nhẹ</option>
+      <option value="gemini-3.1-pro-preview">Ryzen Pro — thông minh nhất, chậm hơn</option>
     </select>
     <div class="modal-actions">
       <button class="btn-cancel" type="button" id="cancelSettings">Đóng</button>
@@ -513,11 +522,13 @@
 
 <script>
 const BOT_NAME = "Ryzen AI";
-const DEFAULT_MODEL = "gemini-flash-latest";
+const DEFAULT_MODEL = "gemini-3.8-flash";
 const SYSTEM_PROMPT = `Bạn tên là "${BOT_NAME}". Nếu người dùng hỏi bạn là ai, bạn dùng model gì, hoặc AI gì, hãy trả lời rằng bạn là "${BOT_NAME}", một trợ lý AI. Đừng nhắc đến Google, Gemini, hay bất kỳ nhà cung cấp mô hình nền tảng nào — đó là chi tiết kỹ thuật nội bộ không cần tiết lộ.
 Nếu người dùng hỏi ai đã tạo ra bạn / lập trình bạn, hãy trả lời rằng người tạo ra bạn là Phạm Xuân Viên, hiện đang học lớp 11B2 tại Trung tâm GDNN-GDTX khu vực 3 Long Khánh, Đồng Nai. Chỉ nhắc chi tiết này khi được hỏi trực tiếp về người tạo, không tự chèn vào các câu trả lời khác.
 Người dùng có thể gửi kèm ảnh hoặc tệp trong cuộc trò chuyện — hãy xem và phản hồi nội dung đó khi có.
 Trả lời tự nhiên, ngắn gọn, thân thiện, bằng tiếng Việt trừ khi người dùng dùng ngôn ngữ khác.`;
+
+const GEMINI_API_KEY = "AQ.Ab8RN6KFK5F5dBUdCWqb1wvs7LnStUBGqA-kjsvowBve4vrtmQ";
 
 const mainEl = document.getElementById('main');
 const threadEl = document.getElementById('thread');
@@ -526,7 +537,6 @@ const form = document.getElementById('inputBar');
 const input = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 const modalBackdrop = document.getElementById('modalBackdrop');
-const apiKeyInput = document.getElementById('apiKeyInput');
 const modelSelect = document.getElementById('modelSelect');
 const modalModelSelect = document.getElementById('modalModelSelect');
 
@@ -607,16 +617,12 @@ function updateSendState() {
   sendBtn.disabled = input.value.trim().length === 0 && pendingAttachments.length === 0;
 }
 
-function getKey() { return localStorage.getItem('ryzen_gemini_key') || ''; }
-function setKey(k) { localStorage.setItem('ryzen_gemini_key', k); }
-
-function openModal() { apiKeyInput.value = getKey(); modalModelSelect.value = getModel(); modalBackdrop.classList.add('show'); }
+function openModal() { modalModelSelect.value = getModel(); modalBackdrop.classList.add('show'); }
 function closeModal() { modalBackdrop.classList.remove('show'); }
 
 document.getElementById('openSettings').addEventListener('click', openModal);
 document.getElementById('cancelSettings').addEventListener('click', closeModal);
 document.getElementById('saveSettings').addEventListener('click', () => {
-  setKey(apiKeyInput.value.trim());
   setModel(modalModelSelect.value);
   modelSelect.value = modalModelSelect.value;
   closeModal();
@@ -684,8 +690,7 @@ function hideTyping() {
 function scrollDown() { mainEl.scrollTop = mainEl.scrollHeight; }
 
 async function callGemini(userText, attachments) {
-  const key = getKey();
-  if (!key) { openModal(); throw new Error('NO_KEY'); }
+  const key = GEMINI_API_KEY;
 
   const model = getModel();
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
@@ -701,7 +706,7 @@ async function callGemini(userText, attachments) {
   const body = {
     system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
     contents: history,
-    generationConfig: { temperature: 0.9, maxOutputTokens: 1024 }
+    generationConfig: { maxOutputTokens: 4096 }
   };
 
   const maxRetries = 3;
@@ -761,11 +766,7 @@ form.addEventListener('submit', async (e) => {
     addBotRow(reply);
   } catch (err) {
     hideTyping();
-    if (err.message !== 'NO_KEY') {
-      addErrorRow(err.message);
-    } else {
-      history.pop();
-    }
+    addErrorRow(err.message);
   } finally {
     updateSendState();
     input.focus();
@@ -783,10 +784,6 @@ input.addEventListener('input', () => {
   input.style.height = Math.min(input.scrollHeight, 140) + 'px';
   updateSendState();
 });
-
-if (!getKey()) {
-  setTimeout(openModal, 400);
-}
 </script>
 </body>
 </html>
