@@ -468,8 +468,8 @@
   </div>
   <div class="header-right">
     <select class="model-select" id="modelSelect" title="Chọn model">
-      <option value="gemini-3.8-flash">Flash</option>
-      <option value="gemini-3.1-flash-lite">Flash Lite</option>
+      <option value="gemini-3.6-flash">Flash</option>
+      <option value="gemini-3.5-flash-lite">Flash Lite</option>
       <option value="gemini-3.1-pro-preview">Pro</option>
     </select>
     <button class="icon-btn" id="openSettings" title="Cài đặt">
@@ -509,10 +509,13 @@
     <h3>Model</h3>
     <p>Chọn model dùng cho các câu trả lời.</p>
     <select class="model-select modal-model-select" id="modalModelSelect">
-      <option value="gemini-3.8-flash">Ryzen Flash — nhanh, cân bằng (Gemini 3.8)</option>
-      <option value="gemini-3.1-flash-lite">Ryzen Flash Lite — nhanh nhất, nhẹ</option>
+      <option value="gemini-3.6-flash">Ryzen Flash — nhanh, cân bằng (Gemini 3.6 Flash)</option>
+      <option value="gemini-3.5-flash-lite">Ryzen Flash Lite — nhanh nhất, nhẹ</option>
       <option value="gemini-3.1-pro-preview">Ryzen Pro — thông minh nhất, chậm hơn</option>
     </select>
+    <h3 style="margin-top:20px">API Key</h3>
+    <p>Nhập Gemini API key của bạn (lấy miễn phí tại <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--accent)">Google AI Studio</a>). Key chỉ lưu trên trình duyệt của bạn, không gửi đi đâu khác.</p>
+    <input type="password" id="apiKeyInput" placeholder="Dán API key vào đây (AIza...)" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface-hi);color:var(--text);font-size:14px;margin-top:4px">
     <div class="modal-actions">
       <button class="btn-cancel" type="button" id="cancelSettings">Đóng</button>
       <button class="btn-save" type="button" id="saveSettings">Lưu</button>
@@ -520,15 +523,18 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { GoogleGenAI } from "https://esm.run/@google/genai";
+
 const BOT_NAME = "Ryzen AI";
-const DEFAULT_MODEL = "gemini-3.8-flash";
+const DEFAULT_MODEL = "gemini-3.6-flash";
 const SYSTEM_PROMPT = `Bạn tên là "${BOT_NAME}". Nếu người dùng hỏi bạn là ai, bạn dùng model gì, hoặc AI gì, hãy trả lời rằng bạn là "${BOT_NAME}", một trợ lý AI. Đừng nhắc đến Google, Gemini, hay bất kỳ nhà cung cấp mô hình nền tảng nào — đó là chi tiết kỹ thuật nội bộ không cần tiết lộ.
 Nếu người dùng hỏi ai đã tạo ra bạn / lập trình bạn, hãy trả lời rằng người tạo ra bạn là Phạm Xuân Viên, hiện đang học lớp 11B2 tại Trung tâm GDNN-GDTX khu vực 3 Long Khánh, Đồng Nai. Chỉ nhắc chi tiết này khi được hỏi trực tiếp về người tạo, không tự chèn vào các câu trả lời khác.
 Người dùng có thể gửi kèm ảnh hoặc tệp trong cuộc trò chuyện — hãy xem và phản hồi nội dung đó khi có.
 Trả lời tự nhiên, ngắn gọn, thân thiện, bằng tiếng Việt trừ khi người dùng dùng ngôn ngữ khác.`;
 
-const GEMINI_API_KEY = "AQ.Ab8RN6KFK5F5dBUdCWqb1wvs7LnStUBGqA-kjsvowBve4vrtmQ";
+function getApiKey() { return localStorage.getItem('ryzen_api_key') || ''; }
+function setApiKey(k) { localStorage.setItem('ryzen_api_key', k); }
 
 const mainEl = document.getElementById('main');
 const threadEl = document.getElementById('thread');
@@ -539,6 +545,7 @@ const sendBtn = document.getElementById('sendBtn');
 const modalBackdrop = document.getElementById('modalBackdrop');
 const modelSelect = document.getElementById('modelSelect');
 const modalModelSelect = document.getElementById('modalModelSelect');
+const apiKeyInput = document.getElementById('apiKeyInput');
 
 function getModel() { return localStorage.getItem('ryzen_model') || DEFAULT_MODEL; }
 function setModel(m) { localStorage.setItem('ryzen_model', m); }
@@ -556,7 +563,6 @@ modelSelect.addEventListener('change', () => {
   modalModelSelect.value = modelSelect.value;
 });
 
-let previousInteractionId = null;
 let pendingAttachments = []; // {name, mimeType, data (base64), previewUrl}
 
 const attachBtn = document.getElementById('attachBtn');
@@ -617,7 +623,11 @@ function updateSendState() {
   sendBtn.disabled = input.value.trim().length === 0 && pendingAttachments.length === 0;
 }
 
-function openModal() { modalModelSelect.value = getModel(); modalBackdrop.classList.add('show'); }
+function openModal() {
+  modalModelSelect.value = getModel();
+  apiKeyInput.value = getApiKey();
+  modalBackdrop.classList.add('show');
+}
 function closeModal() { modalBackdrop.classList.remove('show'); }
 
 document.getElementById('openSettings').addEventListener('click', openModal);
@@ -625,6 +635,7 @@ document.getElementById('cancelSettings').addEventListener('click', closeModal);
 document.getElementById('saveSettings').addEventListener('click', () => {
   setModel(modalModelSelect.value);
   modelSelect.value = modalModelSelect.value;
+  setApiKey(apiKeyInput.value.trim());
   closeModal();
 });
 modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeModal(); });
@@ -689,75 +700,81 @@ function hideTyping() {
 
 function scrollDown() { mainEl.scrollTop = mainEl.scrollHeight; }
 
-async function callGemini(userText, attachments) {
-  const key = GEMINI_API_KEY;
-  const model = getModel();
-  const url = `https://generativelanguage.googleapis.com/v1beta/interactions`;
+// SDK @google/genai quản lý lịch sử hội thoại qua chatSession, nên chỉ cần
+// tái tạo session khi API key hoặc model thay đổi.
+let aiClient = null;
+let chatSession = null;
+let sessionKey = '';   // key đã dùng để tạo session hiện tại
+let sessionModel = ''; // model đã dùng để tạo session hiện tại
 
-  // Build multimodal input content array
-  const content = [];
-  if (userText) content.push({ type: 'text', text: userText });
+function ensureChatSession() {
+  const key = getApiKey();
+  if (!key) {
+    throw new Error('Bạn chưa nhập API key. Vào phần Cài đặt (⚙️) để dán Gemini API key (lấy miễn phí tại Google AI Studio).');
+  }
+  const model = getModel();
+
+  if (!chatSession || sessionKey !== key || sessionModel !== model) {
+    aiClient = new GoogleGenAI({ apiKey: key });
+    chatSession = aiClient.chats.create({
+      model,
+      config: {
+        systemInstruction: SYSTEM_PROMPT,
+        maxOutputTokens: 4096
+      }
+    });
+    sessionKey = key;
+    sessionModel = model;
+  }
+  return chatSession;
+}
+
+async function callGemini(userText, attachments) {
+  const chat = ensureChatSession();
+
+  // Build multimodal message parts for this turn
+  const parts = [];
+  if (userText) parts.push({ text: userText });
   (attachments || []).forEach(a => {
-    content.push({ type: 'image', data: a.data, mime_type: a.mimeType });
+    parts.push({ inlineData: { mimeType: a.mimeType, data: a.data } });
   });
 
-  const body = {
-    model,
-    system_instruction: SYSTEM_PROMPT,
-    input: content,
-    generation_config: { max_output_tokens: 4096 }
-  };
-  // Stateful multi-turn: server remembers prior turns via this id
-  if (previousInteractionId) {
-    body.previous_interaction_id = previousInteractionId;
-  }
-
   const maxRetries = 3;
-  let res, lastErrText = '';
+  let lastErr;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': key
-      },
-      body: JSON.stringify(body)
-    });
+    try {
+      const response = await chat.sendMessage({ message: parts });
+      const reply = response.text || '(không có phản hồi)';
+      return reply;
+    } catch (err) {
+      lastErr = err;
+      const status = err?.status || err?.code;
+      const msg = String(err?.message || err);
 
-    if (res.ok) break;
-
-    lastErrText = await res.text();
-
-    // Retry on 503 (overloaded) or 429 (rate limited) with exponential backoff
-    if ((res.status === 503 || res.status === 429) && attempt < maxRetries) {
-      const delay = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s
-      await new Promise(r => setTimeout(r, delay));
-      continue;
+      const isOverloaded = status === 503 || status === 429 || /overloaded|rate.?limit|quota/i.test(msg);
+      if (isOverloaded && attempt < maxRetries) {
+        const delay = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s
+        await new Promise(r => setTimeout(r, delay));
+        continue;
+      }
+      break;
     }
-    break;
   }
 
-  if (!res.ok) {
-    if (res.status === 503 || res.status === 429) {
-      throw new Error('Model đang quá tải, mình đã thử lại vài lần nhưng vẫn chưa được. Bạn đợi một chút rồi gửi lại giúp mình nhé 🙏');
-    }
-    throw new Error(`API lỗi (${res.status}): ${lastErrText.slice(0, 200)}`);
+  const status = lastErr?.status || lastErr?.code;
+  const msg = String(lastErr?.message || lastErr);
+
+  if (status === 503 || status === 429 || /overloaded|rate.?limit|quota/i.test(msg)) {
+    throw new Error('Model đang quá tải, mình đã thử lại vài lần nhưng vẫn chưa được. Bạn đợi một chút rồi gửi lại giúp mình nhé 🙏');
   }
-
-  const data = await res.json();
-
-  // Save interaction id for the next turn (stateful history)
-  if (data.id) previousInteractionId = data.id;
-
-  // New schema: steps array with type discriminators. Grab the model_output step(s).
-  const steps = data.steps || [];
-  const modelSteps = steps.filter(s => s.type === 'model_output');
-  const reply = modelSteps
-    .flatMap(s => (s.content || []).filter(c => c.type === 'text').map(c => c.text || ''))
-    .join('') || '(không có phản hồi)';
-
-  return reply;
+  if (/API key not valid|API_KEY_INVALID/i.test(msg)) {
+    throw new Error('API key không hợp lệ. Vào Cài đặt để kiểm tra lại key nhé.');
+  }
+  if (status === 403 || /permission|forbidden/i.test(msg)) {
+    throw new Error('API key không có quyền truy cập hoặc đã bị chặn. Kiểm tra lại trong Cài đặt.');
+  }
+  throw new Error(`API lỗi: ${msg.slice(0, 200)}`);
 }
 
 form.addEventListener('submit', async (e) => {
