@@ -936,6 +936,7 @@
   </div>
 </div>
 
+<script src="config.js"></script>
 <script type="module">
 import { GoogleGenAI } from "https://esm.run/@google/genai";
 
@@ -946,10 +947,14 @@ Nếu người dùng hỏi ai đã tạo ra bạn / lập trình bạn, hãy tr�
 Người dùng có thể gửi kèm ảnh hoặc tệp trong cuộc trò chuyện — hãy xem và phản hồi nội dung đó khi có.
 Trả lời tự nhiên, ngắn gọn, thân thiện, bằng tiếng Việt trừ khi người dùng dùng ngôn ngữ khác.`;
 
-function getApiKey() { return localStorage.getItem('ryzen_api_key') || ''; }
+function getApiKey() {
+  return localStorage.getItem('ryzen_api_key') || window.RYZEN_DEFAULT_CONFIG?.geminiApiKey || '';
+}
 function setApiKey(k) { localStorage.setItem('ryzen_api_key', k); }
 
-function getFastRouterApiKey() { return localStorage.getItem('ryzen_fr_api_key') || ''; }
+function getFastRouterApiKey() {
+  return localStorage.getItem('ryzen_fr_api_key') || window.RYZEN_DEFAULT_CONFIG?.fastRouterApiKey || '';
+}
 function setFastRouterApiKey(k) { localStorage.setItem('ryzen_fr_api_key', k); }
 
 const mainEl = document.getElementById('main');
@@ -1725,16 +1730,21 @@ form.addEventListener('submit', async (e) => {
 
   let live = null;
   try {
-    live = createLiveBotRow();
     let gotFirst = false;
-    const firstChunk = () => { if (!gotFirst) { gotFirst = true; hideTyping(); } };
+    const firstChunk = () => {
+      if (!gotFirst) {
+        gotFirst = true;
+        hideTyping();
+        live = createLiveBotRow();
+      }
+    };
     await callGemini(text, attachments, {
       onThought: (t) => { firstChunk(); live.setThought(t); },
       onAnswer: (a) => { firstChunk(); live.finishThinking(); live.setAnswer(a); },
       onStatus: (m) => { /* trạng thái retry/fallback */ const el = document.querySelector('#typingRow .typing-dots'); if (el && !gotFirst) el.title = m; }
     });
     hideTyping();
-    live.finishThinking();
+    if (live) live.finishThinking();
   } catch (err) {
     hideTyping();
     if (live) live.remove();
