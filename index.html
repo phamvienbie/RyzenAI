@@ -922,13 +922,8 @@
         <option value="high">Sâu (high)</option>
       </select>
     </div>
-    <h3 style="margin-top:20px">API Key</h3>
-    <p>Nhập Gemini API key của bạn (lấy miễn phí tại <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--accent)">Google AI Studio</a>). Key chỉ lưu trên trình duyệt của bạn, không gửi đi đâu khác.</p>
-    <input type="password" id="apiKeyInput" placeholder="Dán API key vào đây (AIza...)" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface-hi);color:var(--text);font-size:14px;margin-top:4px">
-
-    <h3 style="margin-top:20px">FastRouter API Key</h3>
-    <p>Dùng cho model <b>Lunar 1 Max</b>. Nhập API key FastRouter của bạn. Key chỉ lưu trên trình duyệt của bạn, không gửi đi đâu khác.</p>
-    <input type="password" id="frApiKeyInput" placeholder="Dán FastRouter API key vào đây" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface-hi);color:var(--text);font-size:14px;margin-top:4px">
+    <input type="password" id="apiKeyInput" hidden>
+    <input type="password" id="frApiKeyInput" hidden>
     <div class="modal-actions">
       <button class="btn-cancel" type="button" id="cancelSettings">Đóng</button>
       <button class="btn-save" type="button" id="saveSettings">Lưu</button>
@@ -948,14 +943,14 @@ Người dùng có thể gửi kèm ảnh hoặc tệp trong cuộc trò chuyệ
 Trả lời tự nhiên, ngắn gọn, thân thiện, bằng tiếng Việt trừ khi người dùng dùng ngôn ngữ khác.`;
 
 function getApiKey() {
-  return localStorage.getItem('ryzen_api_key') || window.RYZEN_DEFAULT_CONFIG?.geminiApiKey || '';
+  return window.RYZEN_DEFAULT_CONFIG?.geminiApiKey || '';
 }
-function setApiKey(k) { localStorage.setItem('ryzen_api_key', k); }
+function setApiKey(k) {}
 
 function getFastRouterApiKey() {
-  return localStorage.getItem('ryzen_fr_api_key') || window.RYZEN_DEFAULT_CONFIG?.fastRouterApiKey || '';
+  return window.RYZEN_DEFAULT_CONFIG?.fastRouterApiKey || '';
 }
-function setFastRouterApiKey(k) { localStorage.setItem('ryzen_fr_api_key', k); }
+function setFastRouterApiKey(k) {}
 
 const mainEl = document.getElementById('main');
 const threadEl = document.getElementById('thread');
