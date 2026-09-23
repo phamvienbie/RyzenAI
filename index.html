@@ -530,6 +530,77 @@
     font-size: 14px;
   }
 
+  /* ---- Custom inline dropdown (modal: Model / Thinking level) ---- */
+  .inline-dropdown { position: relative; width: 100%; margin-top: 8px; }
+  .inline-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--surface-hi);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+  }
+  .inline-trigger:hover { background-color: var(--border); }
+  .inline-trigger svg {
+    width: 16px; height: 16px; flex-shrink: 0;
+    stroke: #9aa0a6;
+    transition: transform .15s ease;
+  }
+  .inline-dropdown.open .inline-trigger svg { transform: rotate(180deg); }
+  .inline-dropdown.open .inline-trigger { border-color: var(--accent-grad-a); }
+
+  .inline-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--surface-hi);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 60;
+  }
+  .inline-dropdown.open .inline-menu { display: flex; }
+
+  .inline-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+  }
+  .inline-option:hover { background: var(--border); }
+  .inline-option.selected { background: rgba(157, 107, 255, 0.14); color: var(--accent); }
+  .inline-option .io-check {
+    width: 16px; height: 16px; flex-shrink: 0;
+    stroke: var(--accent, #9d6bff);
+    opacity: 0;
+  }
+  .inline-option.selected .io-check { opacity: 1; }
+
   /* ---- Thinking block ---- */
   .think-box {
     margin-bottom: 10px;
@@ -747,7 +818,7 @@
           <span class="mo-name">Rosia 0.5</span>
           <svg class="mo-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
-        <button type="button" class="model-option" data-value="gemini-3.1-pro-preview">
+        <button type="button" class="model-option" data-value="fastrouter-opus-4.7">
           <span class="mo-name">Lunar 1 Max</span>
           <svg class="mo-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
@@ -755,7 +826,7 @@
       <select class="model-select" id="modelSelect" hidden>
         <option value="gemini-3.8-flash">Lunar 1</option>
         <option value="gemini-3.5-flash-lite">Rosia 0.5</option>
-        <option value="gemini-3.1-pro-preview">Lunar 1 Max</option>
+        <option value="fastrouter-opus-4.7">Lunar 1 Max</option>
       </select>
     </div>
     <button class="icon-btn" id="openSettings" title="Cài đặt">
@@ -794,11 +865,31 @@
   <div class="modal">
     <h3>Model</h3>
     <p>Chọn model dùng cho các câu trả lời.</p>
-    <select class="model-select modal-model-select" id="modalModelSelect">
-      <option value="gemini-3.8-flash">Lunar 1</option>
-      <option value="gemini-3.5-flash-lite">Rosia 0.5</option>
-      <option value="gemini-3.1-pro-preview">Lunar 1 Max</option>
-    </select>
+    <div class="inline-dropdown" id="modalModelDropdown">
+      <button type="button" class="inline-trigger" id="modalModelTrigger">
+        <span class="it-label" id="modalModelTriggerLabel">Lunar 1</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="inline-menu" id="modalModelMenu">
+        <button type="button" class="inline-option" data-value="gemini-3.8-flash">
+          <span>Lunar 1</span>
+          <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
+        <button type="button" class="inline-option" data-value="gemini-3.5-flash-lite">
+          <span>Rosia 0.5</span>
+          <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
+        <button type="button" class="inline-option" data-value="fastrouter-opus-4.7">
+          <span>Lunar 1 Max</span>
+          <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
+      </div>
+      <select class="model-select modal-model-select" id="modalModelSelect" hidden>
+        <option value="gemini-3.8-flash">Lunar 1</option>
+        <option value="gemini-3.5-flash-lite">Rosia 0.5</option>
+        <option value="fastrouter-opus-4.7">Lunar 1 Max</option>
+      </select>
+    </div>
 
     <h3 class="setting-label">Suy nghĩ (Thinking)</h3>
     <p style="margin-bottom:10px">Cho AI suy luận trước khi trả lời. Mức cao giúp giải bài khó tốt hơn nhưng chậm hơn.</p>
@@ -806,14 +897,38 @@
       <span>Hiển thị quá trình suy nghĩ</span>
       <label class="switch"><input type="checkbox" id="showThoughtsToggle"><span class="slider"></span></label>
     </div>
-    <select class="model-select modal-model-select" id="thinkLevelSelect">
-      <option value="low">Nhanh (low)</option>
-      <option value="medium">Cân bằng (medium)</option>
-      <option value="high">Sâu (high)</option>
-    </select>
+    <div class="inline-dropdown" id="thinkLevelDropdown">
+      <button type="button" class="inline-trigger" id="thinkLevelTrigger">
+        <span class="it-label" id="thinkLevelTriggerLabel">Cân bằng (medium)</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="inline-menu" id="thinkLevelMenu">
+        <button type="button" class="inline-option" data-value="low">
+          <span>Nhanh (low)</span>
+          <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
+        <button type="button" class="inline-option" data-value="medium">
+          <span>Cân bằng (medium)</span>
+          <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
+        <button type="button" class="inline-option" data-value="high">
+          <span>Sâu (high)</span>
+          <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
+      </div>
+      <select class="model-select modal-model-select" id="thinkLevelSelect" hidden>
+        <option value="low">Nhanh (low)</option>
+        <option value="medium">Cân bằng (medium)</option>
+        <option value="high">Sâu (high)</option>
+      </select>
+    </div>
     <h3 style="margin-top:20px">API Key</h3>
     <p>Nhập Gemini API key của bạn (lấy miễn phí tại <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--accent)">Google AI Studio</a>). Key chỉ lưu trên trình duyệt của bạn, không gửi đi đâu khác.</p>
     <input type="password" id="apiKeyInput" placeholder="Dán API key vào đây (AIza...)" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface-hi);color:var(--text);font-size:14px;margin-top:4px">
+
+    <h3 style="margin-top:20px">FastRouter API Key</h3>
+    <p>Dùng cho model <b>Lunar 1 Max</b>. Nhập API key FastRouter của bạn. Key chỉ lưu trên trình duyệt của bạn, không gửi đi đâu khác.</p>
+    <input type="password" id="frApiKeyInput" placeholder="Dán FastRouter API key vào đây" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface-hi);color:var(--text);font-size:14px;margin-top:4px">
     <div class="modal-actions">
       <button class="btn-cancel" type="button" id="cancelSettings">Đóng</button>
       <button class="btn-save" type="button" id="saveSettings">Lưu</button>
@@ -834,6 +949,9 @@ Trả lời tự nhiên, ngắn gọn, thân thiện, bằng tiếng Việt tr�
 function getApiKey() { return localStorage.getItem('ryzen_api_key') || ''; }
 function setApiKey(k) { localStorage.setItem('ryzen_api_key', k); }
 
+function getFastRouterApiKey() { return localStorage.getItem('ryzen_fr_api_key') || ''; }
+function setFastRouterApiKey(k) { localStorage.setItem('ryzen_fr_api_key', k); }
+
 const mainEl = document.getElementById('main');
 const threadEl = document.getElementById('thread');
 const emptyState = document.getElementById('emptyState');
@@ -844,6 +962,7 @@ const modalBackdrop = document.getElementById('modalBackdrop');
 const modelSelect = document.getElementById('modelSelect');
 const modalModelSelect = document.getElementById('modalModelSelect');
 const apiKeyInput = document.getElementById('apiKeyInput');
+const frApiKeyInput = document.getElementById('frApiKeyInput');
 
 function getModel() { return localStorage.getItem('ryzen_model') || DEFAULT_MODEL; }
 function setModel(m) { localStorage.setItem('ryzen_model', m); }
@@ -892,6 +1011,49 @@ modelOptions.forEach(opt => {
 document.addEventListener('click', (e) => {
   if (!modelDropdown.contains(e.target)) modelDropdown.classList.remove('open');
 });
+
+/* ---- Custom inline dropdowns (modal: Model / Thinking level) ---- */
+function setupInlineDropdown(dropdownId, triggerId, labelId, menuId, hiddenSelectId, onChange) {
+  const dropdown = document.getElementById(dropdownId);
+  const trigger = document.getElementById(triggerId);
+  const label = document.getElementById(labelId);
+  const menu = document.getElementById(menuId);
+  const hiddenSelect = document.getElementById(hiddenSelectId);
+  const options = Array.from(menu.querySelectorAll('.inline-option'));
+
+  function sync(value) {
+    const opt = options.find(o => o.dataset.value === value);
+    label.textContent = opt ? opt.querySelector('span').textContent : value;
+    options.forEach(o => o.classList.toggle('selected', o.dataset.value === value));
+  }
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelectorAll('.inline-dropdown.open').forEach(d => { if (d !== dropdown) d.classList.remove('open'); });
+    dropdown.classList.toggle('open');
+  });
+  options.forEach(opt => {
+    opt.addEventListener('click', () => {
+      const value = opt.dataset.value;
+      hiddenSelect.value = value;
+      sync(value);
+      dropdown.classList.remove('open');
+      onChange && onChange(value);
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) dropdown.classList.remove('open');
+  });
+
+  return { sync };
+}
+
+const modalModelDropdownCtrl = setupInlineDropdown(
+  'modalModelDropdown', 'modalModelTrigger', 'modalModelTriggerLabel', 'modalModelMenu', 'modalModelSelect'
+);
+const thinkLevelDropdownCtrl = setupInlineDropdown(
+  'thinkLevelDropdown', 'thinkLevelTrigger', 'thinkLevelTriggerLabel', 'thinkLevelMenu', 'thinkLevelSelect'
+);
 
 let pendingAttachments = []; // {name, mimeType, data (base64), previewUrl}
 
@@ -958,9 +1120,12 @@ const thinkLevelSelect = document.getElementById('thinkLevelSelect');
 
 function openModal() {
   modalModelSelect.value = getModel();
+  modalModelDropdownCtrl.sync(getModel());
   apiKeyInput.value = getApiKey();
+  frApiKeyInput.value = getFastRouterApiKey();
   showThoughtsToggle.checked = getShowThoughts();
   thinkLevelSelect.value = getThinkLevel();
+  thinkLevelDropdownCtrl.sync(getThinkLevel());
   modalBackdrop.classList.add('show');
 }
 function closeModal() { modalBackdrop.classList.remove('show'); }
@@ -972,6 +1137,7 @@ document.getElementById('saveSettings').addEventListener('click', () => {
   modelSelect.value = modalModelSelect.value;
   syncModelUI(modalModelSelect.value);
   setApiKey(apiKeyInput.value.trim());
+  setFastRouterApiKey(frApiKeyInput.value.trim());
   setShowThoughts(showThoughtsToggle.checked);
   setThinkLevel(thinkLevelSelect.value);
   closeModal();
@@ -1244,9 +1410,110 @@ function modelsToTry(primary) {
   return [primary, ...FALLBACK_CHAIN.filter(m => m !== primary)];
 }
 
+// ====== FastRouter (Lunar 1 Max) ======
+const FASTROUTER_BASE_URL = 'https://api.fastrouter.ai/api/v1';
+const FASTROUTER_MODEL_MAP = {
+  'fastrouter-opus-4.7': 'anthropic/claude-opus-4.7'
+};
+function isFastRouterModel(model) {
+  return Object.prototype.hasOwnProperty.call(FASTROUTER_MODEL_MAP, model);
+}
+
+async function callFastRouter(model, userText, attachments, cb) {
+  const key = getFastRouterApiKey();
+  if (!key) {
+    throw new Error('Bạn chưa nhập FastRouter API key. Vào phần Cài đặt (⚙️) để dán key cho Lunar 1 Max.');
+  }
+
+  const messages = [{ role: 'system', content: SYSTEM_PROMPT }, ...frHistory];
+  const userContent = [];
+  if (userText) userContent.push({ type: 'text', text: userText });
+  (attachments || []).forEach(a => {
+    if (a.mimeType && a.mimeType.startsWith('image/')) {
+      userContent.push({ type: 'image_url', image_url: { url: `data:${a.mimeType};base64,${a.data}` } });
+    }
+  });
+  messages.push({ role: 'user', content: userContent.length === 1 && userContent[0].type === 'text' ? userText : userContent });
+
+  const level = getThinkLevel();
+  const thinkingBudget = { low: 1024, medium: 4096, high: 12288 }[level] || 4096;
+
+  let res;
+  try {
+    res = await fetch(`${FASTROUTER_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${key}`
+      },
+      body: JSON.stringify({
+        model: FASTROUTER_MODEL_MAP[model],
+        stream: true,
+        messages,
+        thinking: { type: 'enabled', budget_tokens: thinkingBudget }
+      })
+    });
+  } catch (e) {
+    throw new Error('Không thể kết nối tới FastRouter. Kiểm tra mạng và thử lại.');
+  }
+
+  if (!res.ok || !res.body) {
+    let msg = `FastRouter lỗi (${res.status})`;
+    try {
+      const errJson = await res.json();
+      msg = errJson?.error?.message || msg;
+    } catch (_) {}
+    if (res.status === 401 || res.status === 403) {
+      throw new Error('FastRouter API key không hợp lệ hoặc không có quyền. Kiểm tra lại trong Cài đặt.');
+    }
+    throw new Error(msg);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let answer = '';
+  let thought = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('data:')) continue;
+      const data = trimmed.slice(5).trim();
+      if (data === '[DONE]') continue;
+      let json;
+      try { json = JSON.parse(data); } catch (_) { continue; }
+      const delta = json?.choices?.[0]?.delta || {};
+      // Reasoning/thinking đến trước phần trả lời chính
+      const reasoningChunk = delta.reasoning_content ?? delta.reasoning ?? delta.thinking;
+      if (reasoningChunk) {
+        thought += reasoningChunk;
+        cb.onThought(thought);
+      }
+      if (delta.content) {
+        answer += delta.content;
+        cb.onAnswer(answer);
+      }
+    }
+  }
+
+  if (!answer.trim()) throw new Error('EMPTY_RESPONSE');
+
+  frHistory.push({ role: 'user', content: userText });
+  frHistory.push({ role: 'assistant', content: answer });
+
+  return { answer, thought, modelParts: [] };
+}
+
 let aiClient = null;
 let clientKey = '';
-let history = []; // lịch sử hội thoại [{role, parts}]
+let history = []; // lịch sử hội thoại Gemini [{role, parts}]
+let frHistory = []; // lịch sử hội thoại FastRouter [{role, content}]
 
 function getClient() {
   const key = getApiKey();
@@ -1319,6 +1586,17 @@ async function streamOnce(model, contents, cb) {
 }
 
 async function callGemini(userText, attachments, cb) {
+  if (isFastRouterModel(getModel())) {
+    try {
+      return await callFastRouter(getModel(), userText, attachments, cb);
+    } catch (err) {
+      if (String(err?.message) === 'EMPTY_RESPONSE') {
+        throw new Error('Model không trả lời được. Bạn thử gửi lại nhé.');
+      }
+      throw err;
+    }
+  }
+
   const userParts = [];
   if (userText) userParts.push({ text: userText });
   (attachments || []).forEach(a => {
