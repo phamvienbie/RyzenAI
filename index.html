@@ -468,8 +468,8 @@
   </div>
   <div class="header-right">
     <select class="model-select" id="modelSelect" title="Chọn model">
-      <option value="gemini-3.6-flash">Flash</option>
-      <option value="gemini-3.5-flash-lite">Flash Lite</option>
+      <option value="gemini-3.8-flash">Flash</option>
+      <option value="gemini-3.7-flash">Flash Lite</option>
       <option value="gemini-3.1-pro-preview">Pro</option>
     </select>
     <button class="icon-btn" id="openSettings" title="Cài đặt">
@@ -509,9 +509,9 @@
     <h3>Model</h3>
     <p>Chọn model dùng cho các câu trả lời.</p>
     <select class="model-select modal-model-select" id="modalModelSelect">
-      <option value="gemini-3.6-flash">Ryzen Flash — nhanh, cân bằng (Gemini 3.6 Flash)</option>
-      <option value="gemini-3.5-flash-lite">Ryzen Flash Lite — nhanh nhất, nhẹ</option>
-      <option value="gemini-3.1-pro-preview">Ryzen Pro — thông minh nhất, chậm hơn</option>
+      <option value="gemini-3.8-flash">Lunar 1</option>
+      <option value="gemini-3.8-flash">Rosia 0.5</option>
+      <option value="gemini-3.1-pro-preview">Lunar 1 Max</option>
     </select>
     <h3 style="margin-top:20px">API Key</h3>
     <p>Nhập Gemini API key của bạn (lấy miễn phí tại <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--accent)">Google AI Studio</a>). Key chỉ lưu trên trình duyệt của bạn, không gửi đi đâu khác.</p>
@@ -527,7 +527,7 @@
 import { GoogleGenAI } from "https://esm.run/@google/genai";
 
 const BOT_NAME = "Ryzen AI";
-const DEFAULT_MODEL = "gemini-3.6-flash";
+const DEFAULT_MODEL = "gemini-3.8-flash";
 const SYSTEM_PROMPT = `Bạn tên là "${BOT_NAME}". Nếu người dùng hỏi bạn là ai, bạn dùng model gì, hoặc AI gì, hãy trả lời rằng bạn là "${BOT_NAME}", một trợ lý AI. Đừng nhắc đến Google, Gemini, hay bất kỳ nhà cung cấp mô hình nền tảng nào — đó là chi tiết kỹ thuật nội bộ không cần tiết lộ.
 Nếu người dùng hỏi ai đã tạo ra bạn / lập trình bạn, hãy trả lời rằng người tạo ra bạn là Phạm Xuân Viên, hiện đang học lớp 11B2 tại Trung tâm GDNN-GDTX khu vực 3 Long Khánh, Đồng Nai. Chỉ nhắc chi tiết này khi được hỏi trực tiếp về người tạo, không tự chèn vào các câu trả lời khác.
 Người dùng có thể gửi kèm ảnh hoặc tệp trong cuộc trò chuyện — hãy xem và phản hồi nội dung đó khi có.
