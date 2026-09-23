@@ -819,14 +819,14 @@
           <svg class="mo-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
         <button type="button" class="model-option" data-value="fastrouter-opus-4.7">
-          <span class="mo-name">Lunar 1 Max</span>
+          <span class="mo-name">Lunar Astal 1</span>
           <svg class="mo-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
       </div>
       <select class="model-select" id="modelSelect" hidden>
         <option value="gemini-3.8-flash">Lunar 1</option>
         <option value="gemini-3.5-flash-lite">Rosia 0.5</option>
-        <option value="fastrouter-opus-4.7">Lunar 1 Max</option>
+        <option value="fastrouter-opus-4.7">Lunar Astal 1</option>
       </select>
     </div>
     <button class="icon-btn" id="openSettings" title="Cài đặt">
@@ -880,14 +880,14 @@
           <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
         <button type="button" class="inline-option" data-value="fastrouter-opus-4.7">
-          <span>Lunar 1 Max</span>
+          <span>Lunar Astal 1</span>
           <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
       </div>
       <select class="model-select modal-model-select" id="modalModelSelect" hidden>
         <option value="gemini-3.8-flash">Lunar 1</option>
         <option value="gemini-3.5-flash-lite">Rosia 0.5</option>
-        <option value="fastrouter-opus-4.7">Lunar 1 Max</option>
+        <option value="fastrouter-opus-4.7">Lunar Astal 1</option>
       </select>
     </div>
 
@@ -1410,7 +1410,7 @@ function modelsToTry(primary) {
   return [primary, ...FALLBACK_CHAIN.filter(m => m !== primary)];
 }
 
-// ====== FastRouter (Lunar 1 Max) ======
+// ====== FastRouter (Lunar Astal 1) ======
 const FASTROUTER_BASE_URL = 'https://api.fastrouter.ai/api/v1';
 const FASTROUTER_MODEL_MAP = {
   'fastrouter-opus-4.7': 'anthropic/claude-opus-4.7'
@@ -1422,7 +1422,7 @@ function isFastRouterModel(model) {
 async function callFastRouter(model, userText, attachments, cb) {
   const key = getFastRouterApiKey();
   if (!key) {
-    throw new Error('Bạn chưa nhập FastRouter API key. Vào phần Cài đặt (⚙️) để dán key cho Lunar 1 Max.');
+    throw new Error('Bạn chưa nhập FastRouter API key. Vào phần Cài đặt (⚙️) để dán key cho Lunar Astal 1.');
   }
 
   const messages = [{ role: 'system', content: SYSTEM_PROMPT }, ...frHistory];
