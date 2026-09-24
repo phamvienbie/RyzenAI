@@ -771,6 +771,16 @@
   .copy-btn:hover { background: var(--surface-hi); color: var(--text); }
   .copy-btn svg { width: 14px; height: 14px; }
   .copy-btn.copied { color: #81c995; }
+  .code-head-actions { display: flex; align-items: center; gap: 2px; }
+  .open-ws-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer;
+    color: var(--text-dim); font-family: inherit; font-size: 12px;
+    padding: 5px 9px; border-radius: 8px;
+    transition: background .15s, color .15s;
+  }
+  .open-ws-btn:hover { background: var(--surface-hi); color: var(--accent); }
+  .open-ws-btn svg { width: 14px; height: 14px; }
   .code-block pre {
     margin: 0; padding: 12px 14px;
     overflow-x: auto;
@@ -793,6 +803,107 @@
   .tk-com { color: #6b7280; font-style: italic; }
   .tk-fn { color: #82aaff; }
   .tk-lit { color: #f78c6c; }
+
+  /* ---- Code Workspace (panel kiểu Antigravity) ---- */
+  #appShell { display: flex; height: 100%; overflow: hidden; }
+  #chatCol { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100%; transition: flex .18s ease; }
+
+  .ws-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 90; display: none;
+  }
+  .ws-backdrop.show { display: block; }
+
+  #codeWorkspace {
+    position: fixed;
+    top: 0; right: -100%;
+    width: min(560px, 100vw);
+    height: 100%;
+    background: #0d0e0f;
+    border-left: 1px solid var(--border);
+    z-index: 95;
+    display: flex;
+    flex-direction: column;
+    transition: right .22s ease;
+    box-shadow: -12px 0 40px rgba(0,0,0,0.4);
+  }
+  #codeWorkspace.open { right: 0; }
+
+  .ws-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .ws-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .ws-title svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+  .ws-filename { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ws-close-btn {
+    background: none; border: none; cursor: pointer; color: var(--text-dim);
+    padding: 6px; border-radius: 8px; display: flex; flex-shrink: 0;
+  }
+  .ws-close-btn:hover { background: var(--surface-hi); color: var(--text); }
+  .ws-close-btn svg { width: 18px; height: 18px; }
+
+  .ws-tabs {
+    display: flex; gap: 2px;
+    padding: 8px 10px 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .ws-tab {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-dim); font-family: inherit; font-size: 13px; font-weight: 500;
+    padding: 8px 14px; border-radius: 8px 8px 0 0;
+    display: flex; align-items: center; gap: 6px;
+    position: relative;
+  }
+  .ws-tab svg { width: 14px; height: 14px; }
+  .ws-tab.active { color: var(--text); background: #0d0e0f; }
+  .ws-tab:not(.active):hover { color: var(--text); }
+
+  .ws-body { flex: 1; min-height: 0; position: relative; }
+  .ws-pane { position: absolute; inset: 0; display: none; overflow: auto; }
+  .ws-pane.active { display: block; }
+  #wsCodePane pre { margin: 0; padding: 16px; }
+  #wsCodePane code {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px; line-height: 1.65; color: #e3e3e3; white-space: pre; tab-size: 2;
+  }
+  #wsPreviewPane { background: #fff; }
+  #wsPreviewFrame { width: 100%; height: 100%; border: none; display: block; }
+  .ws-preview-empty {
+    display: flex; align-items: center; justify-content: center; height: 100%;
+    color: #8a8f98; font-size: 13px; text-align: center; padding: 20px; background: #16171a;
+  }
+
+  .ws-footer {
+    display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .ws-footer-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface-hi); border: 1px solid var(--border); cursor: pointer;
+    color: var(--text); font-family: inherit; font-size: 13px; font-weight: 500;
+    padding: 8px 14px; border-radius: 10px;
+  }
+  .ws-footer-btn:hover { background: var(--border); }
+  .ws-footer-btn svg { width: 14px; height: 14px; }
+  .ws-footer-btn.primary { background: var(--accent-grad); border: none; color: #fff; }
+
+  @media (min-width: 900px) {
+    #codeWorkspace { position: static; right: auto; width: 0; box-shadow: none; transition: width .22s ease; overflow: hidden; }
+    #codeWorkspace.open { width: min(560px, 42vw); }
+    .ws-backdrop { display: none !important; }
+  }
+  @media (max-width: 899px) {
+    #codeWorkspace { width: 100vw; }
+  }
   .bubble-wrap { min-width: 0; }
 </style>
 </head>
@@ -835,6 +946,8 @@
   </div>
 </header>
 
+<div id="appShell">
+<div id="chatCol">
 <main id="main">
   <div class="empty-state" id="emptyState">
     <div class="empty-state-logo"></div>
@@ -860,6 +973,45 @@
   </div>
 </div>
 <div class="disclaimer">Nova AI có thể trả lời sai. Hãy kiểm tra lại các thông tin quan trọng.</div>
+</div>
+
+<div class="ws-backdrop" id="wsBackdrop"></div>
+<div id="codeWorkspace">
+  <div class="ws-header">
+    <div class="ws-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <span class="ws-filename" id="wsFilename">Code</span>
+    </div>
+    <button type="button" class="ws-close-btn" id="wsCloseBtn" title="Đóng">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="ws-tabs">
+    <button type="button" class="ws-tab active" data-ws-tab="code">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Code
+    </button>
+    <button type="button" class="ws-tab" data-ws-tab="preview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Preview
+    </button>
+  </div>
+  <div class="ws-body">
+    <div class="ws-pane active" id="wsCodePane"><pre><code id="wsCodeContent"></code></pre></div>
+    <div class="ws-pane" id="wsPreviewPane"></div>
+  </div>
+  <div class="ws-footer">
+    <button type="button" class="ws-footer-btn" id="wsCopyBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Sao chép
+    </button>
+    <button type="button" class="ws-footer-btn primary" id="wsRunBtn">
+      <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Chạy Preview
+    </button>
+  </div>
+</div>
+</div>
 
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal">
@@ -1289,6 +1441,9 @@ function highlight(code, lang) {
 
 const COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 const CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+const WS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+let codeBlockCounter = 0;
+const codeBlockStore = {}; // blockId -> { code, lang }
 
 function inlineMd(t) {
   t = escHtml(t);
@@ -1358,9 +1513,15 @@ function renderMarkdown(text) {
     const lang = rawLang.split(/\s+/)[0];
     const code = m[2].replace(/\n$/, '');
     const label = LANG_NAMES[lang] || (lang ? lang.charAt(0).toUpperCase() + lang.slice(1) : 'Code');
-    html += `<div class="code-block"><div class="code-head"><span class="code-lang">${escHtml(label)}</span>` +
-            `<button type="button" class="copy-btn" data-copy>${COPY_ICON}<span>Sao chép</span></button></div>` +
-            `<pre><code>${highlight(code, lang)}</code></pre></div>`;
+    const blockId = 'cb' + (++codeBlockCounter);
+    const highlightHtml = highlight(code, lang);
+    codeBlockStore[blockId] = { code, lang, highlightHtml };
+    html += `<div class="code-block" id="${blockId}" data-lang="${escHtml(lang)}"><div class="code-head"><span class="code-lang">${escHtml(label)}</span>` +
+            `<div class="code-head-actions">` +
+            `<button type="button" class="open-ws-btn" data-open-ws>${WS_ICON}<span>Workspace</span></button>` +
+            `<button type="button" class="copy-btn" data-copy>${COPY_ICON}<span>Sao chép</span></button>` +
+            `</div></div>` +
+            `<pre><code>${highlightHtml}</code></pre></div>`;
     last = fence.lastIndex;
     if (fence.lastIndex >= text.length) break;
   }
@@ -1396,6 +1557,107 @@ document.addEventListener('click', async (e) => {
     btn.querySelector('svg').outerHTML = COPY_ICON;
     btn.querySelector('span').textContent = 'Sao chép';
   }, 1800);
+});
+
+/* ====== Code Workspace (panel kiểu Antigravity) ====== */
+const codeWorkspace = document.getElementById('codeWorkspace');
+const wsBackdrop = document.getElementById('wsBackdrop');
+const wsFilename = document.getElementById('wsFilename');
+const wsCodeContent = document.getElementById('wsCodeContent');
+const wsPreviewPane = document.getElementById('wsPreviewPane');
+const wsCloseBtn = document.getElementById('wsCloseBtn');
+const wsCopyBtn = document.getElementById('wsCopyBtn');
+const wsRunBtn = document.getElementById('wsRunBtn');
+const wsTabs = document.querySelectorAll('.ws-tab');
+const wsCodePane = document.getElementById('wsCodePane');
+
+const PREVIEWABLE_LANGS = new Set(['html', 'htm', 'xml', 'svg']);
+// Ngôn ngữ dựng preview riêng bằng cách bọc vào khung HTML
+const JS_LANGS = new Set(['javascript', 'js', 'jsx']);
+const CSS_LANGS = new Set(['css']);
+
+let wsCurrentCode = '';
+let wsCurrentLang = '';
+let wsCurrentHighlightHtml = '';
+
+const FILE_EXT = { javascript:'js', js:'js', jsx:'jsx', typescript:'ts', ts:'ts', tsx:'tsx', python:'py', py:'py', html:'html', css:'css', json:'json', java:'java', c:'c', cpp:'cpp', csharp:'cs', go:'go', rust:'rs', php:'php', ruby:'rb', sql:'sql', bash:'sh', shell:'sh', yaml:'yml' };
+
+function openWorkspace(blockId) {
+  const entry = codeBlockStore[blockId];
+  if (!entry) return;
+  wsCurrentCode = entry.code;
+  wsCurrentLang = entry.lang;
+  wsCurrentHighlightHtml = entry.highlightHtml;
+
+  const label = LANG_NAMES[entry.lang] || (entry.lang ? entry.lang.charAt(0).toUpperCase() + entry.lang.slice(1) : 'Code');
+  const ext = FILE_EXT[entry.lang] || 'txt';
+  wsFilename.textContent = `${label} · main.${ext}`;
+  wsCodeContent.innerHTML = entry.highlightHtml;
+
+  setWsTab('code');
+  buildPreview();
+
+  codeWorkspace.classList.add('open');
+  wsBackdrop.classList.add('show');
+}
+
+function closeWorkspace() {
+  codeWorkspace.classList.remove('open');
+  wsBackdrop.classList.remove('show');
+}
+
+function setWsTab(tab) {
+  wsTabs.forEach(t => t.classList.toggle('active', t.dataset.wsTab === tab));
+  wsCodePane.classList.toggle('active', tab === 'code');
+  document.getElementById('wsPreviewPane').classList.toggle('active', tab === 'preview');
+}
+
+function buildPreview() {
+  wsPreviewPane.innerHTML = '';
+  const lang = wsCurrentLang;
+
+  if (PREVIEWABLE_LANGS.has(lang)) {
+    const iframe = document.createElement('iframe');
+    iframe.id = 'wsPreviewFrame';
+    iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-modals allow-popups');
+    wsPreviewPane.appendChild(iframe);
+    iframe.srcdoc = wsCurrentCode;
+    return;
+  }
+  if (JS_LANGS.has(lang) || CSS_LANGS.has(lang)) {
+    const iframe = document.createElement('iframe');
+    iframe.id = 'wsPreviewFrame';
+    iframe.setAttribute('sandbox', 'allow-scripts allow-modals');
+    wsPreviewPane.appendChild(iframe);
+    const wrapped = CSS_LANGS.has(lang)
+      ? `<!doctype html><html><head><style>${wsCurrentCode}</style></head><body><p style="font-family:sans-serif;color:#333;padding:16px">Xem trước CSS — chưa có HTML để áp dụng, đây là khung mẫu.</p></body></html>`
+      : `<!doctype html><html><head><style>body{font-family:ui-sans-serif,system-ui,sans-serif;padding:16px;color:#222}</style></head><body><div id="root"></div><scr` + `ipt>try{${wsCurrentCode}}catch(e){document.body.innerHTML='<pre style="color:#c0392b;white-space:pre-wrap">'+e+'</pre>';}</scr` + `ipt></body></html>`;
+    iframe.srcdoc = wrapped;
+    return;
+  }
+  wsPreviewPane.innerHTML = `<div class="ws-preview-empty">Ngôn ngữ này chưa hỗ trợ chạy Preview trực tiếp.<br>Bạn có thể xem code ở tab Code.</div>`;
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-open-ws]');
+  if (!btn) return;
+  const block = btn.closest('.code-block');
+  openWorkspace(block.id);
+});
+
+wsCloseBtn.addEventListener('click', closeWorkspace);
+wsBackdrop.addEventListener('click', closeWorkspace);
+wsTabs.forEach(tab => tab.addEventListener('click', () => setWsTab(tab.dataset.wsTab)));
+wsRunBtn.addEventListener('click', () => { buildPreview(); setWsTab('preview'); });
+wsCopyBtn.addEventListener('click', async () => {
+  const ok = await copyText(wsCurrentCode);
+  const label = wsCopyBtn.querySelector('span') || wsCopyBtn.lastChild;
+  wsCopyBtn.innerHTML = ok
+    ? `${CHECK_ICON}Đã sao chép`
+    : `${COPY_ICON}Sao chép`;
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && codeWorkspace.classList.contains('open')) closeWorkspace();
 });
 
 // ====== THINKING SETTINGS ======
