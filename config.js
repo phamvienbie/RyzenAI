@@ -3,5 +3,5 @@
 // được nội dung (View Source / tab Network). Không dùng cho key cần bảo mật.
 window.RYZEN_DEFAULT_CONFIG = {
   geminiApiKey: "AQ.Ab8RN6K-56HWFqahARua7qhP2HjhFV5DMPvZq34j2MrIKlYQ0w",
-  fastRouterApiKey: "sk-v1-fe5b4adb03dcfbb2dab6fb5d9127a17d50dc191a5e5d5b84be386a254ba2810c"
+  fastRouterApiKey: "sk-v1-e6ca742ee17e07faa65eb52dcb6632b608769f75f61efdcac7709159579a35ed"
 };
