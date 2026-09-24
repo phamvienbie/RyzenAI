@@ -818,10 +818,15 @@
           <span class="mo-name">Nova CodeZ</span>
           <svg class="mo-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
+        <button type="button" class="model-option" data-value="fastrouter-opus-4.7">
+          <span class="mo-name">Lunar Astal 1</span>
+          <svg class="mo-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
       </div>
       <select class="model-select" id="modelSelect" hidden>
         <option value="fastrouter-gemini-3.6-flash">Nova Starlight 1</option>
         <option value="fastrouter-gpt-5.6-sol">Nova CodeZ</option>
+        <option value="fastrouter-opus-4.7">Lunar Astal 1</option>
       </select>
     </div>
     <button class="icon-btn" id="openSettings" title="Cài đặt">
@@ -874,10 +879,15 @@
           <span>Nova CodeZ</span>
           <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
+        <button type="button" class="inline-option" data-value="fastrouter-opus-4.7">
+          <span>Lunar Astal 1</span>
+          <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
       </div>
       <select class="model-select modal-model-select" id="modalModelSelect" hidden>
         <option value="fastrouter-gemini-3.6-flash">Nova Starlight 1</option>
         <option value="fastrouter-gpt-5.6-sol">Nova CodeZ</option>
+        <option value="fastrouter-opus-4.7">Lunar Astal 1</option>
       </select>
     </div>
 
@@ -1404,7 +1414,8 @@ function modelsToTry(primary) {
 const FASTROUTER_BASE_URL = 'https://api.fastrouter.ai/api/v1';
 const FASTROUTER_MODEL_MAP = {
   'fastrouter-gemini-3.6-flash': 'google/gemini-3.6-flash',
-  'fastrouter-gpt-5.6-sol': 'openai/gpt-5.6-sol'
+  'fastrouter-gpt-5.6-sol': 'openai/gpt-5.6-sol',
+  'fastrouter-opus-4.7': 'anthropic/claude-opus-4.7'
 };
 function isFastRouterModel(model) {
   return Object.prototype.hasOwnProperty.call(FASTROUTER_MODEL_MAP, model);
