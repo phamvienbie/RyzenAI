@@ -905,6 +905,157 @@
     #codeWorkspace { width: 100vw; }
   }
   .bubble-wrap { min-width: 0; }
+
+  /* ================= CODE EDITOR (VS Code-like) ================= */
+  .ce-root {
+    position: fixed; inset: 0; z-index: 500;
+    display: none; flex-direction: column;
+    background: #1e1e1e; color: #cccccc;
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  }
+  .ce-root.open { display: flex; }
+
+  .ce-titlebar {
+    flex-shrink: 0; height: 44px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 10px; background: #252526; border-bottom: 1px solid #1a1a1a;
+  }
+  .ce-titlebar-left, .ce-titlebar-right { display: flex; align-items: center; gap: 4px; }
+  .ce-brand { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #e3e3e3; margin-left: 4px; }
+  .ce-titlebar-center { font-size: 12px; color: #9d9d9d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40vw; }
+  .ce-icon-btn {
+    width: 30px; height: 30px; border-radius: 6px; border: none; background: transparent; color: #cccccc;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .ce-icon-btn:hover { background: #3a3a3c; }
+  .ce-icon-btn.primary { color: #89d185; }
+  .ce-icon-btn.primary:hover { background: rgba(137,209,133,.15); }
+
+  .ce-body { flex: 1; min-height: 0; display: flex; }
+
+  .ce-activitybar {
+    flex-shrink: 0; width: 48px; background: #252526; border-right: 1px solid #1a1a1a;
+    display: flex; flex-direction: column; align-items: center; padding-top: 8px; gap: 4px;
+  }
+  .ce-act-btn {
+    width: 40px; height: 40px; border: none; background: transparent; color: #858585; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; border-radius: 6px; position: relative;
+  }
+  .ce-act-btn.active { color: #fff; }
+  .ce-act-btn.active::before { content: ''; position: absolute; left: -8px; top: 6px; bottom: 6px; width: 2px; background: #4c8dff; border-radius: 2px; }
+  .ce-act-btn:hover { color: #fff; }
+
+  .ce-sidepanel {
+    flex-shrink: 0; width: 220px; background: #252526; border-right: 1px solid #1a1a1a;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .ce-side-view { display: none; flex-direction: column; height: 100%; min-height: 0; }
+  .ce-side-view.active { display: flex; }
+  .ce-side-header {
+    padding: 10px 14px 6px; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #9d9d9d;
+    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  .ce-side-actions { display: flex; gap: 2px; }
+  .ce-mini-btn {
+    width: 22px; height: 22px; border: none; background: transparent; color: #9d9d9d; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; border-radius: 4px; flex-shrink: 0;
+  }
+  .ce-mini-btn:hover { background: #3a3a3c; color: #fff; }
+  .ce-project-name { padding: 2px 14px 6px; font-size: 12.5px; font-weight: 700; color: #e3e3e3; flex-shrink: 0; }
+  .ce-filetree { flex: 1; overflow: auto; padding-bottom: 10px; }
+  .ce-file-item {
+    display: flex; align-items: center; gap: 6px; padding: 4px 14px; font-size: 13px; color: #cccccc;
+    cursor: pointer; white-space: nowrap; user-select: none;
+  }
+  .ce-file-item:hover { background: #2a2d2e; }
+  .ce-file-item.active { background: #37373d; }
+  .ce-file-item svg { width: 14px; height: 14px; flex-shrink: 0; color: #858585; }
+  .ce-file-item .ce-file-name { overflow: hidden; text-overflow: ellipsis; }
+  .ce-search-input {
+    margin: 0 12px 8px; padding: 6px 8px; background: #3c3c3c; border: 1px solid #3c3c3c; border-radius: 3px;
+    color: #cccccc; font-size: 12.5px; outline: none; flex-shrink: 0;
+  }
+  .ce-search-input:focus { border-color: #4c8dff; }
+  .ce-search-results { flex: 1; overflow: auto; padding: 0 12px; font-size: 12.5px; }
+  .ce-search-result { padding: 6px 0; border-bottom: 1px solid #333; cursor: pointer; }
+  .ce-search-result:hover { color: #fff; }
+  .ce-search-result .ce-sr-file { color: #4c8dff; font-weight: 600; }
+  .ce-search-result .ce-sr-line { color: #9d9d9d; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .ce-editorarea { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .ce-tabs { flex-shrink: 0; display: flex; overflow-x: auto; background: #252526; border-bottom: 1px solid #1a1a1a; }
+  .ce-tab {
+    flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 8px 10px 8px 14px; font-size: 12.5px;
+    background: #2d2d2d; border-right: 1px solid #1a1a1a; color: #9d9d9d; cursor: pointer; white-space: nowrap;
+  }
+  .ce-tab.active { background: #1e1e1e; color: #fff; }
+  .ce-tab-close { width: 16px; height: 16px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #9d9d9d; }
+  .ce-tab-close:hover { background: #4a4a4a; color: #fff; }
+  .ce-tab-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; flex-shrink: 0; }
+
+  .ce-editorwrap { flex: 1; min-height: 0; display: flex; position: relative; overflow: hidden; background: #1e1e1e; }
+  .ce-linenumbers {
+    flex-shrink: 0; width: 46px; padding: 12px 0; text-align: right; font: 13px/1.55 'SFMono-Regular', Menlo, Consolas, monospace;
+    color: #5a5a5a; user-select: none; overflow: hidden; box-sizing: border-box;
+  }
+  .ce-linenumbers div { padding-right: 12px; }
+  .ce-textarea, .ce-highlight {
+    position: absolute; top: 0; left: 46px; right: 0; bottom: 0;
+    margin: 0; padding: 12px 16px; border: none; outline: none; resize: none;
+    font: 13px/1.55 'SFMono-Regular', Menlo, Consolas, monospace; white-space: pre; overflow: auto;
+    box-sizing: border-box; tab-size: 2;
+  }
+  .ce-textarea { background: transparent; color: transparent; caret-color: #fff; z-index: 2; }
+  .ce-highlight { background: transparent; color: #d4d4d4; z-index: 1; pointer-events: none; }
+  .ce-highlight code { font: inherit; white-space: inherit; }
+  .cehl-tag { color: #569cd6; } .cehl-attr { color: #9cdcfe; } .cehl-str { color: #ce9178; }
+  .cehl-com { color: #6a9955; font-style: italic; } .cehl-kw { color: #c586c0; } .cehl-num { color: #b5cea8; }
+  .cehl-fn { color: #dcdcaa; } .cehl-punc { color: #808080; }
+
+  .ce-terminal {
+    flex-shrink: 0; height: 0; overflow: hidden; background: #181818; border-top: 1px solid #1a1a1a;
+    display: flex; flex-direction: column; transition: height .18s ease;
+  }
+  .ce-terminal.open { height: 200px; }
+  .ce-terminal-header {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 6px 12px;
+    font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #9d9d9d; border-bottom: 1px solid #1a1a1a;
+  }
+  .ce-terminal-output { flex: 1; overflow: auto; padding: 6px 12px; font: 12.5px/1.6 Menlo, Consolas, monospace; color: #d4d4d4; }
+  .ce-terminal-output .ce-tl-cmd { color: #89d185; }
+  .ce-terminal-output .ce-tl-err { color: #f14c4c; }
+  .ce-terminal-output .ce-tl-info { color: #9cdcfe; }
+  .ce-terminal-input-row { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 6px 12px 10px; }
+  .ce-prompt { color: #89d185; font: 12.5px Menlo, Consolas, monospace; }
+  .ce-terminal-input {
+    flex: 1; background: transparent; border: none; outline: none; color: #d4d4d4;
+    font: 12.5px Menlo, Consolas, monospace;
+  }
+
+  .ce-previewpanel {
+    flex-shrink: 0; width: 0; overflow: hidden; background: #fff; border-left: 1px solid #1a1a1a;
+    display: flex; flex-direction: column; transition: width .18s ease;
+  }
+  .ce-previewpanel.open { width: min(420px, 40vw); }
+  .ce-preview-header {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 6px 12px;
+    font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #6b6b6b; background: #f3f3f3; border-bottom: 1px solid #ddd;
+  }
+  .ce-preview-header .ce-mini-btn { color: #6b6b6b; }
+  .ce-preview-header .ce-mini-btn:hover { background: #e0e0e0; color: #000; }
+  .ce-preview-frame { flex: 1; border: none; width: 100%; }
+
+  .ce-statusbar {
+    flex-shrink: 0; height: 24px; background: #4c8dff; color: #fff; display: flex; align-items: center;
+    padding: 0 14px; gap: 16px; font-size: 11.5px;
+  }
+  .ce-status-spacer { flex: 1; }
+
+  @media (max-width: 760px) {
+    .ce-sidepanel { position: absolute; top: 44px; bottom: 0; left: 48px; z-index: 30; box-shadow: 4px 0 12px rgba(0,0,0,.4); }
+    .ce-sidepanel:not(.mobile-open) { display: none; }
+    .ce-previewpanel.open { width: 100vw; position: absolute; inset: 44px 0 0 0; z-index: 40; }
+    .ce-titlebar-center { max-width: 30vw; }
+  }
 </style>
 </head>
 <body>
@@ -1076,10 +1227,120 @@
     </div>
     <input type="password" id="apiKeyInput" hidden>
     <input type="password" id="frApiKeyInput" hidden>
+
+    <h3 class="setting-label">Công cụ</h3>
+    <div class="toggle-row" style="cursor:pointer" id="openCodeEditorRow">
+      <span>Code Editor</span>
+      <button type="button" class="btn-cancel" id="openCodeEditorBtn" style="display:flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Mở Code
+      </button>
+    </div>
+
     <div class="modal-actions">
       <button class="btn-cancel" type="button" id="cancelSettings">Đóng</button>
       <button class="btn-save" type="button" id="saveSettings">Lưu</button>
     </div>
+  </div>
+</div>
+
+<!-- ================= CODE EDITOR (VS Code-like) ================= -->
+<div class="ce-root" id="ceRoot">
+  <div class="ce-titlebar">
+    <div class="ce-titlebar-left">
+      <button type="button" class="ce-icon-btn" id="ceBackBtn" title="Quay lại Nova AI">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+      <span class="ce-brand">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Nova Code
+      </span>
+    </div>
+    <div class="ce-titlebar-center" id="ceActiveFileLabel">— chưa mở tệp —</div>
+    <div class="ce-titlebar-right">
+      <button type="button" class="ce-icon-btn" id="ceNewFileBtn" title="Tệp mới">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6M9 15h6"/></svg>
+      </button>
+      <button type="button" class="ce-icon-btn primary" id="ceRunBtn" title="Chạy">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>
+      <button type="button" class="ce-icon-btn" id="ceTerminalBtn" title="Bật/tắt Terminal">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="ce-body">
+    <!-- Activity bar -->
+    <div class="ce-activitybar">
+      <button type="button" class="ce-act-btn active" data-ce-view="explorer" title="Explorer">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      </button>
+      <button type="button" class="ce-act-btn" data-ce-view="search" title="Tìm kiếm">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+
+    <!-- Side panel -->
+    <div class="ce-sidepanel" id="ceSidePanel">
+      <div class="ce-side-view active" id="ceExplorerView">
+        <div class="ce-side-header">
+          <span>EXPLORER</span>
+          <div class="ce-side-actions">
+            <button type="button" class="ce-mini-btn" id="ceAddFileBtn" title="Tệp mới"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6M9 15h6"/></svg></button>
+            <button type="button" class="ce-mini-btn" id="ceDelFileBtn" title="Xoá tệp đang mở"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+          </div>
+        </div>
+        <div class="ce-project-name">NOVA-PROJECT</div>
+        <div class="ce-filetree" id="ceFileTree"></div>
+      </div>
+      <div class="ce-side-view" id="ceSearchView">
+        <div class="ce-side-header"><span>TÌM KIẾM</span></div>
+        <input type="text" class="ce-search-input" id="ceSearchInput" placeholder="Tìm trong tệp...">
+        <div class="ce-search-results" id="ceSearchResults"></div>
+      </div>
+    </div>
+
+    <!-- Editor area -->
+    <div class="ce-editorarea">
+      <div class="ce-tabs" id="ceTabs"></div>
+      <div class="ce-editorwrap">
+        <div class="ce-linenumbers" id="ceLineNumbers"></div>
+        <textarea class="ce-textarea" id="ceTextarea" spellcheck="false" placeholder="// Chọn hoặc tạo một tệp để bắt đầu..."></textarea>
+        <pre class="ce-highlight" id="ceHighlight"><code id="ceHighlightCode"></code></pre>
+      </div>
+      <div class="ce-terminal" id="ceTerminal">
+        <div class="ce-terminal-header">
+          <span>TERMINAL</span>
+          <button type="button" class="ce-mini-btn" id="ceTerminalCloseBtn">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="ce-terminal-output" id="ceTerminalOutput"></div>
+        <div class="ce-terminal-input-row">
+          <span class="ce-prompt">$</span>
+          <input type="text" class="ce-terminal-input" id="ceTerminalInput" autocomplete="off" placeholder="Nhập lệnh (help để xem danh sách)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview panel -->
+    <div class="ce-previewpanel" id="cePreviewPanel">
+      <div class="ce-preview-header">
+        <span>PREVIEW</span>
+        <button type="button" class="ce-mini-btn" id="cePreviewCloseBtn">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <iframe class="ce-preview-frame" id="cePreviewFrame"></iframe>
+    </div>
+  </div>
+
+  <div class="ce-statusbar">
+    <span id="ceStatusLang">Plain Text</span>
+    <span id="ceStatusPos">Ln 1, Col 1</span>
+    <span class="ce-status-spacer"></span>
+    <span id="ceStatusSaved">Đã lưu</span>
   </div>
 </div>
 
@@ -2025,6 +2286,432 @@ input.addEventListener('input', () => {
   input.style.height = Math.min(input.scrollHeight, 140) + 'px';
   updateSendState();
 });
+</script>
+
+<script>
+/* ================= NOVA CODE — VS Code-like editor ================= */
+(function () {
+  const LS_KEY = 'novaCodeFiles_v1';
+
+  const DEFAULT_FILES = {
+    'index.html': {
+      lang: 'html',
+      content: '<!DOCTYPE html>\n<html lang="vi">\n<head>\n<meta charset="UTF-8">\n<title>Trang của tôi</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Xin chào, Nova Code!</h1>\n  <p>Sửa các tệp bên trái rồi bấm Chạy (▶) để xem Preview.</p>\n  <script src="script.js"><\/script>\n</body>\n</html>\n'
+    },
+    'style.css': {
+      lang: 'css',
+      content: 'body {\n  font-family: system-ui, sans-serif;\n  background: #0f1115;\n  color: #eaeaea;\n  padding: 40px;\n}\nh1 {\n  color: #a8c7fa;\n}\n'
+    },
+    'script.js': {
+      lang: 'javascript',
+      content: 'console.log("Nova Code đã sẵn sàng.");\n\ndocument.querySelector("h1")?.addEventListener("click", () => {\n  alert("Bạn vừa bấm vào tiêu đề!");\n});\n'
+    },
+    'notes.md': {
+      lang: 'markdown',
+      content: '# Ghi chú\n\nĐây là trình soạn thảo giống VS Code, tích hợp ngay trong Nova AI.\n\n- Tạo / xoá tệp ở Explorer bên trái\n- Nhiều tab cùng lúc\n- Terminal giả lập (gõ `help`)\n- Bấm ▶ để chạy & xem Preview (HTML/CSS/JS)\n'
+    }
+  };
+
+  function loadFiles() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(DEFAULT_FILES));
+  }
+  function saveFiles() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(ceState.files)); } catch (e) {}
+  }
+
+  const ceState = {
+    files: loadFiles(),
+    openTabs: [],
+    activeFile: null,
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const ceRoot = $('ceRoot');
+  const ceFileTree = $('ceFileTree');
+  const ceTabs = $('ceTabs');
+  const ceTextarea = $('ceTextarea');
+  const ceHighlightCode = $('ceHighlightCode');
+  const ceLineNumbers = $('ceLineNumbers');
+  const ceActiveFileLabel = $('ceActiveFileLabel');
+  const ceStatusLang = $('ceStatusLang');
+  const ceStatusPos = $('ceStatusPos');
+  const ceStatusSaved = $('ceStatusSaved');
+  const ceTerminal = $('ceTerminal');
+  const ceTerminalOutput = $('ceTerminalOutput');
+  const ceTerminalInput = $('ceTerminalInput');
+  const cePreviewPanel = $('cePreviewPanel');
+  const cePreviewFrame = $('cePreviewFrame');
+
+  const ICONS = {
+    html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 3l1.5 17L12 22l6.5-2L20 3z"/><path d="M8 8h8M8 12h7M9 16h5"/></svg>',
+    css: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 3l1.5 17L12 22l6.5-2L20 3z"/></svg>',
+    javascript: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 15c.5 1 1.3 1.5 2 1.5s1.3-.5 1.3-1.3c0-2-3.5-1.7-3.5-4 0-1.2 1-2 2.2-2 .9 0 1.5.4 2 1"/></svg>',
+    markdown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M6 15V9l3 3 3-3v6M16 15v-6l3 3"/></svg>',
+    json: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3a2 2 0 00-2 2v4a2 2 0 01-2 2 2 2 0 012 2v4a2 2 0 002 2M16 3a2 2 0 012 2v4a2 2 0 002 2 2 2 0 00-2 2v4a2 2 0 01-2 2"/></svg>',
+    default: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>'
+  };
+
+  function extToLang(name) {
+    const ext = name.split('.').pop().toLowerCase();
+    if (ext === 'html' || ext === 'htm') return 'html';
+    if (ext === 'css') return 'css';
+    if (ext === 'js' || ext === 'mjs') return 'javascript';
+    if (ext === 'md') return 'markdown';
+    if (ext === 'json') return 'json';
+    return 'plaintext';
+  }
+
+  function fileIcon(name) {
+    return ICONS[extToLang(name)] || ICONS.default;
+  }
+
+  /* ---- File tree ---- */
+  function renderFileTree() {
+    ceFileTree.innerHTML = '';
+    Object.keys(ceState.files).sort().forEach((name) => {
+      const item = document.createElement('div');
+      item.className = 'ce-file-item' + (name === ceState.activeFile ? ' active' : '');
+      item.innerHTML = fileIcon(name) + `<span class="ce-file-name">${escapeHtml(name)}</span>`;
+      item.addEventListener('click', () => openFile(name));
+      ceFileTree.appendChild(item);
+    });
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /* ---- Tabs ---- */
+  function renderTabs() {
+    ceTabs.innerHTML = '';
+    ceState.openTabs.forEach((name) => {
+      const tab = document.createElement('div');
+      tab.className = 'ce-tab' + (name === ceState.activeFile ? ' active' : '');
+      tab.innerHTML = fileIcon(name) + `<span>${escapeHtml(name)}</span>` +
+        `<span class="ce-tab-close" data-close="${escapeHtml(name)}">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </span>`;
+      tab.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-tab-close')) return;
+        openFile(name);
+      });
+      tab.querySelector('.ce-tab-close').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeTab(name);
+      });
+      ceTabs.appendChild(tab);
+    });
+  }
+
+  function closeTab(name) {
+    const idx = ceState.openTabs.indexOf(name);
+    if (idx === -1) return;
+    ceState.openTabs.splice(idx, 1);
+    if (ceState.activeFile === name) {
+      const next = ceState.openTabs[idx] || ceState.openTabs[idx - 1] || null;
+      ceState.activeFile = next;
+    }
+    renderTabs();
+    renderEditor();
+    renderFileTree();
+  }
+
+  /* ---- Open / edit ---- */
+  function openFile(name) {
+    if (!ceState.files[name]) return;
+    if (!ceState.openTabs.includes(name)) ceState.openTabs.push(name);
+    ceState.activeFile = name;
+    renderTabs();
+    renderFileTree();
+    renderEditor();
+  }
+
+  function renderEditor() {
+    const name = ceState.activeFile;
+    if (!name || !ceState.files[name]) {
+      ceTextarea.value = '';
+      ceTextarea.disabled = true;
+      ceTextarea.placeholder = '// Chọn hoặc tạo một tệp để bắt đầu...';
+      ceActiveFileLabel.textContent = '— chưa mở tệp —';
+      ceStatusLang.textContent = 'Plain Text';
+      updateHighlight();
+      updateLineNumbers();
+      return;
+    }
+    ceTextarea.disabled = false;
+    const file = ceState.files[name];
+    ceTextarea.value = file.content;
+    ceActiveFileLabel.textContent = name;
+    ceStatusLang.textContent = langLabel(file.lang);
+    updateHighlight();
+    updateLineNumbers();
+    ceTextarea.focus();
+  }
+
+  function langLabel(lang) {
+    return { html: 'HTML', css: 'CSS', javascript: 'JavaScript', markdown: 'Markdown', json: 'JSON', plaintext: 'Plain Text' }[lang] || 'Plain Text';
+  }
+
+  /* ---- Line numbers ---- */
+  function updateLineNumbers() {
+    const lines = ceTextarea.value.split('\n').length;
+    let html = '';
+    for (let i = 1; i <= lines; i++) html += `<div>${i}</div>`;
+    ceLineNumbers.innerHTML = html;
+  }
+
+  /* ---- Very light syntax highlight ---- */
+  function highlightCode(code, lang) {
+    let c = escapeHtml(code);
+    if (lang === 'html') {
+      c = c.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="cehl-com">$1</span>');
+      c = c.replace(/(&lt;\/?)([a-zA-Z0-9-]+)/g, '$1<span class="cehl-tag">$2</span>');
+      c = c.replace(/([a-zA-Z-]+)(=)("[^"]*"|'[^']*')/g, '<span class="cehl-attr">$1</span>$2<span class="cehl-str">$3</span>');
+    } else if (lang === 'css') {
+      c = c.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="cehl-com">$1</span>');
+      c = c.replace(/([.#]?[a-zA-Z0-9_-]+)(\s*\{)/g, '<span class="cehl-tag">$1</span>$2');
+      c = c.replace(/([a-zA-Z-]+)(\s*:)/g, '<span class="cehl-attr">$1</span>$2');
+      c = c.replace(/(#[0-9a-fA-F]{3,8}\b|\b\d+(\.\d+)?(px|em|rem|%|s|ms)?\b)/g, '<span class="cehl-num">$1</span>');
+    } else if (lang === 'javascript' || lang === 'json') {
+      c = c.replace(/(\/\/[^\n]*)/g, '<span class="cehl-com">$1</span>');
+      c = c.replace(/(&quot;[^&]*?&quot;|'[^']*?'|`[^`]*?`)/g, '<span class="cehl-str">$1</span>');
+      c = c.replace(/\b(const|let|var|function|return|if|else|for|while|new|class|import|export|from|default|async|await|try|catch|typeof|null|true|false|undefined|this)\b/g, '<span class="cehl-kw">$1</span>');
+      c = c.replace(/\b(\d+(\.\d+)?)\b/g, '<span class="cehl-num">$1</span>');
+    } else if (lang === 'markdown') {
+      c = c.replace(/^(#{1,6}.*)$/gm, '<span class="cehl-tag">$1</span>');
+      c = c.replace(/(\*\*[^*]+\*\*)/g, '<span class="cehl-kw">$1</span>');
+    }
+    return c;
+  }
+
+  function updateHighlight() {
+    const name = ceState.activeFile;
+    const lang = name ? ceState.files[name].lang : 'plaintext';
+    ceHighlightCode.innerHTML = highlightCode(ceTextarea.value, lang) + '\n';
+  }
+
+  function syncScroll() {
+    $('ceHighlight').scrollTop = ceTextarea.scrollTop;
+    $('ceHighlight').scrollLeft = ceTextarea.scrollLeft;
+    ceLineNumbers.scrollTop = ceTextarea.scrollTop;
+  }
+
+  ceTextarea.addEventListener('scroll', syncScroll);
+  ceTextarea.addEventListener('input', () => {
+    const name = ceState.activeFile;
+    if (!name) return;
+    ceState.files[name].content = ceTextarea.value;
+    updateHighlight();
+    updateLineNumbers();
+    updateCursorStatus();
+    ceStatusSaved.textContent = 'Đang lưu…';
+    clearTimeout(ceTextarea._saveTimer);
+    ceTextarea._saveTimer = setTimeout(() => {
+      saveFiles();
+      ceStatusSaved.textContent = 'Đã lưu';
+    }, 400);
+  });
+  ceTextarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = ceTextarea.selectionStart, en = ceTextarea.selectionEnd;
+      ceTextarea.value = ceTextarea.value.slice(0, s) + '  ' + ceTextarea.value.slice(en);
+      ceTextarea.selectionStart = ceTextarea.selectionEnd = s + 2;
+      ceTextarea.dispatchEvent(new Event('input'));
+    }
+  });
+  ['keyup', 'click'].forEach(ev => ceTextarea.addEventListener(ev, updateCursorStatus));
+  function updateCursorStatus() {
+    const val = ceTextarea.value.slice(0, ceTextarea.selectionStart);
+    const lines = val.split('\n');
+    ceStatusPos.textContent = `Ln ${lines.length}, Col ${lines[lines.length - 1].length + 1}`;
+  }
+
+  /* ---- New / delete file ---- */
+  function promptNewFile() {
+    const name = prompt('Tên tệp mới (vd: app.js, about.html):');
+    if (!name) return;
+    const clean = name.trim();
+    if (!clean) return;
+    if (ceState.files[clean]) { alert('Tệp đã tồn tại.'); openFile(clean); return; }
+    ceState.files[clean] = { lang: extToLang(clean), content: '' };
+    saveFiles();
+    renderFileTree();
+    openFile(clean);
+  }
+  function deleteActiveFile() {
+    const name = ceState.activeFile;
+    if (!name) return;
+    if (!confirm(`Xoá tệp "${name}"?`)) return;
+    delete ceState.files[name];
+    closeTab(name);
+    saveFiles();
+    renderFileTree();
+  }
+
+  $('ceAddFileBtn').addEventListener('click', promptNewFile);
+  $('ceNewFileBtn').addEventListener('click', promptNewFile);
+  $('ceDelFileBtn').addEventListener('click', deleteActiveFile);
+
+  /* ---- Activity bar switching ---- */
+  document.querySelectorAll('.ce-act-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ce-act-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const view = btn.dataset.ceView;
+      document.querySelectorAll('.ce-side-view').forEach(v => v.classList.remove('active'));
+      $(view === 'search' ? 'ceSearchView' : 'ceExplorerView').classList.add('active');
+      $('ceSidePanel').classList.add('mobile-open');
+    });
+  });
+
+  /* ---- Search ---- */
+  $('ceSearchInput').addEventListener('input', (e) => {
+    const q = e.target.value.trim();
+    const out = $('ceSearchResults');
+    out.innerHTML = '';
+    if (!q) return;
+    Object.entries(ceState.files).forEach(([name, file]) => {
+      file.content.split('\n').forEach((line, i) => {
+        if (line.toLowerCase().includes(q.toLowerCase())) {
+          const div = document.createElement('div');
+          div.className = 'ce-search-result';
+          div.innerHTML = `<span class="ce-sr-file">${escapeHtml(name)}</span><span class="ce-sr-line">${i + 1}: ${escapeHtml(line.trim())}</span>`;
+          div.addEventListener('click', () => openFile(name));
+          out.appendChild(div);
+        }
+      });
+    });
+    if (!out.children.length) out.innerHTML = '<div style="color:#6b6b6b;padding:10px 0">Không tìm thấy kết quả.</div>';
+  });
+
+  /* ---- Terminal ---- */
+  function tlPrint(text, cls) {
+    const line = document.createElement('div');
+    if (cls) line.className = cls;
+    line.textContent = text;
+    ceTerminalOutput.appendChild(line);
+    ceTerminalOutput.scrollTop = ceTerminalOutput.scrollHeight;
+  }
+  function runTerminalCommand(cmd) {
+    tlPrint('$ ' + cmd, 'ce-tl-cmd');
+    const [command, ...args] = cmd.trim().split(/\s+/);
+    switch (command) {
+      case '':
+        break;
+      case 'help':
+        tlPrint('Lệnh khả dụng: ls, cat <tệp>, clear, run, node <tệp.js>, echo <text>', 'ce-tl-info');
+        break;
+      case 'ls':
+        tlPrint(Object.keys(ceState.files).sort().join('  '));
+        break;
+      case 'clear':
+        ceTerminalOutput.innerHTML = '';
+        break;
+      case 'cat':
+        if (!args[0] || !ceState.files[args[0]]) tlPrint(`cat: không tìm thấy tệp '${args[0] || ''}'`, 'ce-tl-err');
+        else tlPrint(ceState.files[args[0]].content);
+        break;
+      case 'echo':
+        tlPrint(args.join(' '));
+        break;
+      case 'run':
+        buildAndRunPreview();
+        tlPrint('Đang chạy Preview…', 'ce-tl-info');
+        break;
+      case 'node':
+        if (!args[0] || !ceState.files[args[0]]) { tlPrint(`node: không tìm thấy tệp '${args[0] || ''}'`, 'ce-tl-err'); break; }
+        runNodeLike(ceState.files[args[0]].content);
+        break;
+      default:
+        tlPrint(`Lệnh không hợp lệ: ${command}. Gõ "help" để xem danh sách.`, 'ce-tl-err');
+    }
+  }
+  function runNodeLike(code) {
+    const logs = [];
+    const fakeConsole = { log: (...a) => logs.push(a.map(String).join(' ')), error: (...a) => logs.push('Error: ' + a.map(String).join(' ')) };
+    try {
+      new Function('console', code)(fakeConsole);
+      logs.forEach(l => tlPrint(l));
+      if (!logs.length) tlPrint('(không có output)', 'ce-tl-info');
+    } catch (err) {
+      tlPrint(String(err), 'ce-tl-err');
+    }
+  }
+  ceTerminalInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const cmd = ceTerminalInput.value;
+      ceTerminalInput.value = '';
+      runTerminalCommand(cmd);
+    }
+  });
+  $('ceTerminalBtn').addEventListener('click', () => {
+    ceTerminal.classList.toggle('open');
+    if (ceTerminal.classList.contains('open')) ceTerminalInput.focus();
+  });
+  $('ceTerminalCloseBtn').addEventListener('click', () => ceTerminal.classList.remove('open'));
+
+  /* ---- Run / Preview ---- */
+  function buildAndRunPreview() {
+    const html = ceState.files['index.html'] ? ceState.files['index.html'].content : null;
+    cePreviewPanel.classList.add('open');
+    if (html) {
+      let doc = html;
+      if (ceState.files['style.css']) {
+        doc = doc.replace(/<link[^>]*href=["']style\.css["'][^>]*>/i, `<style>${ceState.files['style.css'].content}<\/style>`);
+      }
+      if (ceState.files['script.js']) {
+        doc = doc.replace(/<script[^>]*src=["']script\.js["'][^>]*>\s*<\/script>/i, `<script>${ceState.files['script.js'].content}<\/script>`);
+      }
+      cePreviewFrame.srcdoc = doc;
+    } else if (ceState.activeFile && ceState.activeFile.endsWith('.html')) {
+      cePreviewFrame.srcdoc = ceState.files[ceState.activeFile].content;
+    } else {
+      cePreviewFrame.srcdoc = '<body style="font-family:sans-serif;padding:20px;color:#555">Không tìm thấy index.html để chạy Preview.</body>';
+    }
+  }
+  $('ceRunBtn').addEventListener('click', () => {
+    buildAndRunPreview();
+    if (!ceTerminal.classList.contains('open')) ceTerminal.classList.add('open');
+    tlPrint('▶ Đang chạy index.html trong Preview…', 'ce-tl-info');
+  });
+  $('cePreviewCloseBtn').addEventListener('click', () => cePreviewPanel.classList.remove('open'));
+
+  /* ---- Open / close the whole editor ---- */
+  function openCodeEditor() {
+    ceRoot.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    renderFileTree();
+    if (!ceState.openTabs.length) {
+      const first = Object.keys(ceState.files).sort()[0];
+      if (first) openFile(first);
+    } else {
+      renderTabs();
+      renderEditor();
+    }
+    if (!ceTerminalOutput.children.length) {
+      tlPrint('Nova Code Terminal — gõ "help" để xem danh sách lệnh.', 'ce-tl-info');
+    }
+    // close settings modal if open
+    const backdrop = document.getElementById('modalBackdrop');
+    if (backdrop) backdrop.classList.remove('show');
+  }
+  function closeCodeEditor() {
+    ceRoot.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  $('openCodeEditorBtn').addEventListener('click', openCodeEditor);
+  $('ceBackBtn').addEventListener('click', closeCodeEditor);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && ceRoot.classList.contains('open')) closeCodeEditor();
+  });
+})();
 </script>
 </body>
 </html>
