@@ -981,6 +981,36 @@
   .ce-search-result .ce-sr-file { color: #4c8dff; font-weight: 600; }
   .ce-search-result .ce-sr-line { color: #9d9d9d; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+  .ce-aichat-messages { flex: 1; overflow: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+  .ce-aichat-msg { font-size: 12.5px; line-height: 1.5; padding: 8px 10px; border-radius: 10px; white-space: pre-wrap; word-break: break-word; }
+  .ce-aichat-msg-ai { background: #2a2d2e; color: #d4d4d4; border: 1px solid #333; align-self: flex-start; max-width: 100%; }
+  .ce-aichat-msg-user { background: #2d4373; color: #eaf0ff; align-self: flex-end; max-width: 100%; }
+  .ce-aichat-msg-err { background: rgba(241,76,76,.12); color: #f38686; border: 1px solid rgba(241,76,76,.3); align-self: flex-start; }
+  .ce-aichat-msg code { background: rgba(255,255,255,.08); padding: 1px 4px; border-radius: 3px; font: 11.5px Menlo, Consolas, monospace; }
+  .ce-aichat-diff { margin-top: 6px; border: 1px solid #3c3d3f; border-radius: 8px; overflow: hidden; }
+  .ce-aichat-diff-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 8px; background: #202020; font-size: 11.5px; color: #9cdcfe; }
+  .ce-aichat-diff-apply { border: none; background: #4c8dff; color: #fff; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 5px; cursor: pointer; }
+  .ce-aichat-diff-apply:hover { background: #3f7bde; }
+  .ce-aichat-diff-applied { background: #2a2b2d; color: #89d185; cursor: default; }
+  .ce-aichat-diff-body { max-height: 160px; overflow: auto; padding: 6px 8px; font: 11.5px/1.5 Menlo, Consolas, monospace; color: #ccc; }
+  .ce-aichat-typing { display: flex; gap: 4px; padding: 8px 10px; }
+  .ce-aichat-typing span { width: 6px; height: 6px; border-radius: 50%; background: #9d9d9d; animation: ceTypingBlink 1s infinite ease-in-out; }
+  .ce-aichat-typing span:nth-child(2) { animation-delay: .15s; }
+  .ce-aichat-typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes ceTypingBlink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+  .ce-aichat-inputrow { flex-shrink: 0; display: flex; gap: 6px; padding: 8px 10px 10px; border-top: 1px solid #1a1a1a; }
+  .ce-aichat-input {
+    flex: 1; resize: none; background: #3c3c3c; border: 1px solid #3c3c3c; border-radius: 8px; color: #e3e3e3;
+    font: 12.5px/1.4 inherit; padding: 7px 9px; outline: none;
+  }
+  .ce-aichat-input:focus { border-color: #4c8dff; }
+  .ce-aichat-send {
+    flex-shrink: 0; width: 34px; height: 34px; border: none; border-radius: 8px; background: #4c8dff; color: #fff;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; align-self: flex-end;
+  }
+  .ce-aichat-send:hover { background: #3f7bde; }
+  .ce-aichat-send:disabled { opacity: .5; cursor: default; }
+
   .ce-editorarea { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .ce-tabs { flex-shrink: 0; display: flex; overflow-x: auto; background: #252526; border-bottom: 1px solid #1a1a1a; }
   .ce-tab {
@@ -1279,6 +1309,9 @@
       <button type="button" class="ce-act-btn" data-ce-view="search" title="Tìm kiếm">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
+      <button type="button" class="ce-act-btn" data-ce-view="aichat" title="Nova AI Assistant">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      </button>
     </div>
 
     <!-- Side panel -->
@@ -1298,6 +1331,20 @@
         <div class="ce-side-header"><span>TÌM KIẾM</span></div>
         <input type="text" class="ce-search-input" id="ceSearchInput" placeholder="Tìm trong tệp...">
         <div class="ce-search-results" id="ceSearchResults"></div>
+      </div>
+      <div class="ce-side-view" id="ceAiChatView">
+        <div class="ce-side-header"><span>NOVA AI — SỬA CODE</span></div>
+        <div class="ce-aichat-messages" id="ceAiChatMessages">
+          <div class="ce-aichat-msg ce-aichat-msg-ai">
+            Chào bạn 👋 Mình là Nova AI trong Nova Code. Nói mình cần sửa gì trong tệp đang mở (hoặc cả dự án), mình sẽ chỉnh code trực tiếp giúp bạn.
+          </div>
+        </div>
+        <div class="ce-aichat-inputrow">
+          <textarea class="ce-aichat-input" id="ceAiChatInput" rows="2" placeholder="Yêu cầu Nova AI sửa code..."></textarea>
+          <button type="button" class="ce-aichat-send" id="ceAiChatSend" title="Gửi">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -2376,7 +2423,14 @@ input.addEventListener('input', () => {
       const item = document.createElement('div');
       item.className = 'ce-file-item' + (name === ceState.activeFile ? ' active' : '');
       item.innerHTML = fileIcon(name) + `<span class="ce-file-name">${escapeHtml(name)}</span>`;
+      item.title = 'Nhấp để mở • Nhấp đúp để chạy xem trước';
       item.addEventListener('click', () => openFile(name));
+      item.addEventListener('dblclick', () => {
+        openFile(name);
+        buildAndRunPreview();
+        if (!ceTerminal.classList.contains('open')) ceTerminal.classList.add('open');
+        tlPrint(`▶ Đang chạy ${name} trong Preview…`, 'ce-tl-info');
+      });
       ceFileTree.appendChild(item);
     });
   }
@@ -2564,8 +2618,10 @@ input.addEventListener('input', () => {
       btn.classList.add('active');
       const view = btn.dataset.ceView;
       document.querySelectorAll('.ce-side-view').forEach(v => v.classList.remove('active'));
-      $(view === 'search' ? 'ceSearchView' : 'ceExplorerView').classList.add('active');
+      const viewIdMap = { search: 'ceSearchView', aichat: 'ceAiChatView', explorer: 'ceExplorerView' };
+      $(viewIdMap[view] || 'ceExplorerView').classList.add('active');
       $('ceSidePanel').classList.add('mobile-open');
+      if (view === 'aichat') setTimeout(() => $('ceAiChatInput').focus(), 50);
     });
   });
 
@@ -2657,7 +2713,10 @@ input.addEventListener('input', () => {
 
   /* ---- Run / Preview ---- */
   function buildAndRunPreview() {
-    const html = ceState.files['index.html'] ? ceState.files['index.html'].content : null;
+    // Ưu tiên tệp .html đang mở (workspace của tệp đó); nếu không, dùng index.html của dự án.
+    const activeIsHtml = ceState.activeFile && ceState.activeFile.endsWith('.html') && ceState.files[ceState.activeFile];
+    const entryName = activeIsHtml ? ceState.activeFile : (ceState.files['index.html'] ? 'index.html' : null);
+    const html = entryName ? ceState.files[entryName].content : null;
     cePreviewPanel.classList.add('open');
     if (html) {
       let doc = html;
@@ -2668,10 +2727,8 @@ input.addEventListener('input', () => {
         doc = doc.replace(/<script[^>]*src=["']script\.js["'][^>]*>\s*<\/script>/i, `<script>${ceState.files['script.js'].content}<\/script>`);
       }
       cePreviewFrame.srcdoc = doc;
-    } else if (ceState.activeFile && ceState.activeFile.endsWith('.html')) {
-      cePreviewFrame.srcdoc = ceState.files[ceState.activeFile].content;
     } else {
-      cePreviewFrame.srcdoc = '<body style="font-family:sans-serif;padding:20px;color:#555">Không tìm thấy index.html để chạy Preview.</body>';
+      cePreviewFrame.srcdoc = '<body style="font-family:sans-serif;padding:20px;color:#555">Không tìm thấy tệp .html để chạy Preview.</body>';
     }
   }
   $('ceRunBtn').addEventListener('click', () => {
@@ -2680,6 +2737,187 @@ input.addEventListener('input', () => {
     tlPrint('▶ Đang chạy index.html trong Preview…', 'ce-tl-info');
   });
   $('cePreviewCloseBtn').addEventListener('click', () => cePreviewPanel.classList.remove('open'));
+
+  /* ---- Nova AI mini chat: sửa code trực tiếp trong Nova Code ---- */
+  const ceAiChatMessages = $('ceAiChatMessages');
+  const ceAiChatInput = $('ceAiChatInput');
+  const ceAiChatSend = $('ceAiChatSend');
+  const ceAiChatHistory = []; // {role, content} lịch sử ngắn cho ngữ cảnh
+
+  function escapeHtmlAi(s) {
+    return String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  }
+
+  function ceAiAddMsg(text, cls) {
+    const div = document.createElement('div');
+    div.className = 'ce-aichat-msg ' + cls;
+    div.innerHTML = escapeHtmlAi(text);
+    ceAiChatMessages.appendChild(div);
+    ceAiChatMessages.scrollTop = ceAiChatMessages.scrollHeight;
+    return div;
+  }
+
+  function ceAiShowTyping() {
+    const div = document.createElement('div');
+    div.className = 'ce-aichat-msg ce-aichat-msg-ai ce-aichat-typing-wrap';
+    div.innerHTML = '<div class="ce-aichat-typing"><span></span><span></span><span></span></div>';
+    ceAiChatMessages.appendChild(div);
+    ceAiChatMessages.scrollTop = ceAiChatMessages.scrollHeight;
+    return div;
+  }
+
+  // Trích các khối code kèm tên tệp từ phản hồi AI, dạng:
+  // ```lang path=ten-tep.js
+  // nội dung...
+  // ```
+  function parseAiFileEdits(text) {
+    const edits = [];
+    const re = /```([a-zA-Z0-9_+-]*)\s*(?:path=|file=)?([^\n`]*)\n([\s\S]*?)```/g;
+    let m;
+    while ((m = re.exec(text))) {
+      let header = (m[2] || '').trim();
+      header = header.replace(/^path=|^file=/, '').trim();
+      if (!header) continue;
+      // loại bỏ khoảng trắng / nháy thừa quanh tên tệp
+      header = header.replace(/^["'`]|["'`]$/g, '').trim();
+      if (!/^[\w.\-\/]+\.[a-zA-Z0-9]+$/.test(header)) continue;
+      edits.push({ file: header, content: m[3].replace(/\n$/, '') });
+    }
+    return edits;
+  }
+
+  function stripFileBlocksForDisplay(text) {
+    return text.replace(/```[a-zA-Z0-9_+-]*\s*(?:path=|file=)?[^\n`]*\n[\s\S]*?```/g, '').trim();
+  }
+
+  function ceAiRenderEditsCard(edits) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ce-aichat-msg ce-aichat-msg-ai';
+    wrap.style.padding = '6px';
+    edits.forEach((edit) => {
+      const isNew = !ceState.files[edit.file];
+      const box = document.createElement('div');
+      box.className = 'ce-aichat-diff';
+      const head = document.createElement('div');
+      head.className = 'ce-aichat-diff-head';
+      head.innerHTML = `<span>${isNew ? '🆕' : '✏️'} ${escapeHtmlAi(edit.file)}</span>`;
+      const btn = document.createElement('button');
+      btn.className = 'ce-aichat-diff-apply';
+      btn.type = 'button';
+      btn.textContent = 'Áp dụng';
+      btn.addEventListener('click', () => {
+        ceState.files[edit.file] = ceState.files[edit.file] || { lang: extToLang(edit.file), content: '' };
+        ceState.files[edit.file].content = edit.content;
+        saveFiles();
+        renderFileTree();
+        openFile(edit.file);
+        btn.textContent = 'Đã áp dụng ✓';
+        btn.disabled = true;
+        btn.classList.add('ce-aichat-diff-applied');
+      });
+      head.appendChild(btn);
+      const body = document.createElement('div');
+      body.className = 'ce-aichat-diff-body';
+      body.textContent = edit.content.slice(0, 2000);
+      box.appendChild(head);
+      box.appendChild(body);
+      wrap.appendChild(box);
+    });
+    ceAiChatMessages.appendChild(wrap);
+    ceAiChatMessages.scrollTop = ceAiChatMessages.scrollHeight;
+  }
+
+  function ceAiBuildSystemPrompt() {
+    const activeName = ceState.activeFile;
+    const fileList = Object.keys(ceState.files).sort();
+    let filesDump = fileList.map((n) => {
+      const isActive = n === activeName;
+      return `--- ${n}${isActive ? ' (đang mở)' : ''} ---\n${ceState.files[n].content}`;
+    }).join('\n\n');
+    if (filesDump.length > 12000) filesDump = filesDump.slice(0, 12000) + '\n...(đã cắt bớt)';
+    return `Bạn là Nova AI, trợ lý sửa code bên trong trình soạn thảo "Nova Code". Bạn đang xem dự án gồm các tệp sau:\n${fileList.join(', ') || '(chưa có tệp nào)'}\n\nNội dung hiện tại của các tệp:\n${filesDump}\n\nKhi người dùng yêu cầu sửa/tạo code, hãy trả lời ngắn gọn bằng tiếng Việt giải thích thay đổi, sau đó với MỖI tệp cần tạo/sửa, đưa ra MỘT khối code đầy đủ (toàn bộ nội dung tệp sau khi sửa, không phải chỉ đoạn diff) theo đúng định dạng:\n\`\`\`ext path=ten-tep.ext\n<toàn bộ nội dung tệp>\n\`\`\`\nLuôn dùng đường dẫn tệp có sẵn trong dự án nếu là sửa tệp cũ. Nếu không cần sửa code, chỉ cần trả lời trò chuyện bình thường, không cần khối code.`;
+  }
+
+  async function ceAiCallModel(userText) {
+    const key = getFastRouterApiKey() && isFastRouterModel(getModel()) ? getFastRouterApiKey() : getApiKey();
+    if (!key) throw new Error('Chưa có API key. Vào Cài đặt (⚙️) trong Nova AI để nhập key trước nhé.');
+
+    const sys = ceAiBuildSystemPrompt();
+
+    if (isFastRouterModel(getModel())) {
+      const messages = [{ role: 'system', content: sys }, ...ceAiChatHistory, { role: 'user', content: userText }];
+      const res = await fetch(`${FASTROUTER_BASE_URL}/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getFastRouterApiKey()}` },
+        body: JSON.stringify({ model: FASTROUTER_MODEL_MAP[getModel()], stream: false, messages })
+      });
+      if (!res.ok) {
+        let msg = `FastRouter lỗi (${res.status})`;
+        try { const j = await res.json(); msg = j?.error?.message || msg; } catch (_) {}
+        throw new Error(msg);
+      }
+      const data = await res.json();
+      const text = data?.choices?.[0]?.message?.content || '';
+      ceAiChatHistory.push({ role: 'user', content: userText }, { role: 'assistant', content: text });
+      return text;
+    }
+
+    // Gemini trực tiếp
+    const model = getModel();
+    const contents = [
+      ...ceAiChatHistory.map(h => ({ role: h.role === 'assistant' ? 'model' : 'user', parts: [{ text: h.content }] })),
+      { role: 'user', parts: [{ text: userText }] }
+    ];
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents })
+    });
+    if (!res.ok) {
+      let msg = `Gemini lỗi (${res.status})`;
+      try { const j = await res.json(); msg = j?.error?.message || msg; } catch (_) {}
+      throw new Error(msg);
+    }
+    const data = await res.json();
+    const text = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+    ceAiChatHistory.push({ role: 'user', content: userText }, { role: 'assistant', content: text });
+    return text;
+  }
+
+  async function ceAiSend() {
+    const text = ceAiChatInput.value.trim();
+    if (!text) return;
+    ceAiChatInput.value = '';
+    ceAiChatInput.style.height = 'auto';
+    ceAiAddMsg(text, 'ce-aichat-msg-user');
+    ceAiChatSend.disabled = true;
+    const typingEl = ceAiShowTyping();
+    try {
+      const reply = await ceAiCallModel(text);
+      typingEl.remove();
+      const edits = parseAiFileEdits(reply);
+      const displayText = stripFileBlocksForDisplay(reply) || (edits.length ? 'Mình đã chuẩn bị bản sửa cho bạn:' : 'Xong!');
+      ceAiAddMsg(displayText, 'ce-aichat-msg-ai');
+      if (edits.length) ceAiRenderEditsCard(edits);
+    } catch (err) {
+      typingEl.remove();
+      ceAiAddMsg(String(err.message || err), 'ce-aichat-msg-err');
+    } finally {
+      ceAiChatSend.disabled = false;
+    }
+  }
+
+  ceAiChatSend.addEventListener('click', ceAiSend);
+  ceAiChatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      ceAiSend();
+    }
+  });
+  ceAiChatInput.addEventListener('input', () => {
+    ceAiChatInput.style.height = 'auto';
+    ceAiChatInput.style.height = Math.min(120, ceAiChatInput.scrollHeight) + 'px';
+  });
 
   /* ---- Open / close the whole editor ---- */
   function openCodeEditor() {
