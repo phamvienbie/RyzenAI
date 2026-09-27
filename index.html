@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nova AI</title>
+<title>Ryzen AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
@@ -944,6 +944,35 @@
   .ce-act-btn.active::before { content: ''; position: absolute; left: -8px; top: 6px; bottom: 6px; width: 2px; background: #4c8dff; border-radius: 2px; }
   .ce-act-btn:hover { color: #fff; }
 
+  .ce-root.sidebar-collapsed .ce-sidepanel { width: 0; min-width: 0; border-right: none; overflow: hidden; }
+  #ceSidebarToggleBtn.active { color: #4c8dff; }
+
+  /* ---- Command Palette (VS Code style) ---- */
+  .ce-cmdpalette-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.45); z-index: 80; display: none; align-items: flex-start; justify-content: center; padding-top: 12vh; }
+  .ce-cmdpalette-overlay.show { display: flex; }
+  .ce-cmdpalette { width: min(560px, 90vw); background: #252526; border: 1px solid #454545; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,.5); overflow: hidden; }
+  .ce-cmdpalette-input { width: 100%; box-sizing: border-box; background: #3c3c3c; border: none; outline: none; color: #e3e3e3; font: 13.5px/1.4 inherit; padding: 10px 14px; border-bottom: 1px solid #454545; }
+  .ce-cmdpalette-list { max-height: 320px; overflow: auto; padding: 4px; }
+  .ce-cmdpalette-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 4px; cursor: pointer; font-size: 12.5px; color: #ccc; }
+  .ce-cmdpalette-item svg { width: 14px; height: 14px; flex-shrink: 0; color: #9d9d9d; }
+  .ce-cmdpalette-item .ce-cmd-name { flex: 1; }
+  .ce-cmdpalette-item .ce-cmd-key { font-size: 10.5px; color: #858585; border: 1px solid #454545; border-radius: 4px; padding: 1px 5px; }
+  .ce-cmdpalette-item.active, .ce-cmdpalette-item:hover { background: #04395e; color: #fff; }
+  .ce-cmdpalette-item.active svg, .ce-cmdpalette-item:hover svg { color: #fff; }
+  .ce-cmdpalette-empty { padding: 14px; color: #858585; font-size: 12.5px; text-align: center; }
+
+  /* ---- Find trong tệp (Ctrl+F) ---- */
+  .ce-findbar { position: absolute; top: 8px; right: 24px; z-index: 25; display: none; align-items: center; gap: 4px; background: #252526; border: 1px solid #454545; border-radius: 6px; padding: 5px 6px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+  .ce-findbar.show { display: flex; }
+  .ce-findbar input { width: 150px; background: #3c3c3c; border: 1px solid #454545; border-radius: 4px; color: #e3e3e3; font-size: 12px; padding: 4px 7px; outline: none; }
+  .ce-findbar input:focus { border-color: #4c8dff; }
+  .ce-findbar-count { font-size: 11px; color: #9d9d9d; min-width: 48px; text-align: center; }
+  .ce-findbar button { background: none; border: none; color: #9d9d9d; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; }
+  .ce-findbar button:hover { background: #3c3d3f; color: #fff; }
+  .ce-findbar button svg { width: 14px; height: 14px; }
+  mark.ce-find-hit { background: #613214; color: #fff; border-radius: 2px; }
+  mark.ce-find-hit.current { background: #f9a825; color: #000; }
+
   .ce-sidepanel {
     flex-shrink: 0; width: 220px; background: #252526; border-right: 1px solid #1a1a1a;
     display: flex; flex-direction: column; overflow: hidden;
@@ -983,10 +1012,26 @@
 
   .ce-aichat-messages { flex: 1; overflow: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
   .ce-aichat-msg { font-size: 12.5px; line-height: 1.5; padding: 8px 10px; border-radius: 10px; white-space: pre-wrap; word-break: break-word; }
-  .ce-aichat-msg-ai { background: #2a2d2e; color: #d4d4d4; border: 1px solid #333; align-self: flex-start; max-width: 100%; }
-  .ce-aichat-msg-user { background: #2d4373; color: #eaf0ff; align-self: flex-end; max-width: 100%; }
+  .ce-aichat-msg-ai { background: linear-gradient(180deg,#2b2d2e,#242526); color: #d4d4d4; border: 1px solid #333; align-self: flex-start; max-width: 100%; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .ce-aichat-msg-user { background: linear-gradient(135deg,#3a5bb8,#2d4373); color: #eaf0ff; align-self: flex-end; max-width: 100%; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
   .ce-aichat-msg-err { background: rgba(241,76,76,.12); color: #f38686; border: 1px solid rgba(241,76,76,.3); align-self: flex-start; }
   .ce-aichat-msg code { background: rgba(255,255,255,.08); padding: 1px 4px; border-radius: 3px; font: 11.5px Menlo, Consolas, monospace; }
+  .ce-aichat-msg p { margin: 0 0 6px; }
+  .ce-aichat-msg p:last-child { margin-bottom: 0; }
+  .ce-aichat-msg strong { color: #fff; }
+  /* Khối code kiểu VS Code trong Ryzen AI chat */
+  .ce-aichat-code { margin: 6px 0; border: 1px solid #333; border-radius: 10px; background: #1e1e1e; overflow: hidden; max-width: 100%; white-space: normal; }
+  .ce-aichat-code-head { display: flex; align-items: center; justify-content: space-between; padding: 5px 6px 5px 10px; background: #252526; border-bottom: 1px solid #333; }
+  .ce-aichat-code-lang { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: #9cdcfe; letter-spacing: .3px; }
+  .ce-aichat-code-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .ce-aichat-code-copy { display: flex; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: #9aa0a6; font-size: 10.5px; padding: 3px 6px; border-radius: 6px; transition: background .15s, color .15s; }
+  .ce-aichat-code-copy:hover { background: #333; color: #fff; }
+  .ce-aichat-code-copy svg { width: 11px; height: 11px; }
+  .ce-aichat-code-copy.copied { color: #89d185; }
+  .ce-aichat-code pre { margin: 0; padding: 8px 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ce-aichat-code pre::-webkit-scrollbar { height: 5px; }
+  .ce-aichat-code pre::-webkit-scrollbar-thumb { background: #3c3d3f; border-radius: 6px; }
+  .ce-aichat-code code.ce-aichat-code-content { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11.5px; line-height: 1.55; white-space: pre; tab-size: 2; display: block; background: none; padding: 0; color: #d4d4d4; }
   .ce-aichat-diff { margin-top: 6px; border: 1px solid #3c3d3f; border-radius: 8px; overflow: hidden; }
   .ce-aichat-diff-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 8px; background: #202020; font-size: 11.5px; color: #9cdcfe; }
   .ce-aichat-diff-apply { border: none; background: #4c8dff; color: #fff; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 5px; cursor: pointer; }
@@ -1093,7 +1138,7 @@
 <header>
   <div class="brand">
     <div class="brand-mark"></div>
-    <span class="brand-name">Nova AI</span>
+    <span class="brand-name">Ryzen AI</span>
   </div>
   <div class="header-right">
     <div class="model-dropdown" id="modelDropdown">
@@ -1111,14 +1156,14 @@
           <svg class="mo-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
         <button type="button" class="model-option" data-value="fastrouter-opus-4.7">
-          <span class="mo-name">Lunar Astal 1</span>
+          <span class="mo-name">Lunar Astal 2</span>
           <svg class="mo-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
       </div>
       <select class="model-select" id="modelSelect" hidden>
         <option value="fastrouter-gemini-3.6-flash">Nova Starlight 1</option>
         <option value="fastrouter-gpt-5.6-sol">Nova CodeZ</option>
-        <option value="fastrouter-opus-4.7">Lunar Astal 1</option>
+        <option value="fastrouter-opus-4.7">Lunar Astal 2</option>
       </select>
     </div>
     <button class="icon-btn" id="openSettings" title="Cài đặt">
@@ -1132,7 +1177,7 @@
 <main id="main">
   <div class="empty-state" id="emptyState">
     <div class="empty-state-logo"></div>
-    <h1>Chào bạn, mình là Nova AI</h1>
+    <h1>Chào bạn, mình là Ryzen AI</h1>
     <p>Hỏi mình bất cứ điều gì nhé.</p>
   </div>
   <div class="thread" id="thread"></div>
@@ -1146,14 +1191,14 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21.44 11.05l-9.19 9.19a5 5 0 01-7.07-7.07l9.19-9.19a3.5 3.5 0 015 5l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
       </button>
       <input type="file" id="fileInput" multiple hidden accept="image/*,.pdf,.txt,.csv,.json,.md">
-      <textarea id="userInput" rows="1" placeholder="Nhắn gì đó cho Nova AI" autocomplete="off"></textarea>
+      <textarea id="userInput" rows="1" placeholder="Nhắn gì đó cho Ryzen AI" autocomplete="off"></textarea>
       <button id="sendBtn" type="submit" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
       </button>
     </form>
   </div>
 </div>
-<div class="disclaimer">Nova AI có thể trả lời sai. Hãy kiểm tra lại các thông tin quan trọng.</div>
+<div class="disclaimer">Ryzen AI có thể trả lời sai. Hãy kiểm tra lại các thông tin quan trọng.</div>
 </div>
 
 <div class="ws-backdrop" id="wsBackdrop"></div>
@@ -1213,14 +1258,14 @@
           <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
         <button type="button" class="inline-option" data-value="fastrouter-opus-4.7">
-          <span>Lunar Astal 1</span>
+          <span>Lunar Astal 2</span>
           <svg class="io-check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
         </button>
       </div>
       <select class="model-select modal-model-select" id="modalModelSelect" hidden>
         <option value="fastrouter-gemini-3.6-flash">Nova Starlight 1</option>
         <option value="fastrouter-gpt-5.6-sol">Nova CodeZ</option>
-        <option value="fastrouter-opus-4.7">Lunar Astal 1</option>
+        <option value="fastrouter-opus-4.7">Lunar Astal 2</option>
       </select>
     </div>
 
@@ -1278,16 +1323,22 @@
 <div class="ce-root" id="ceRoot">
   <div class="ce-titlebar">
     <div class="ce-titlebar-left">
-      <button type="button" class="ce-icon-btn" id="ceBackBtn" title="Quay lại Nova AI">
+      <button type="button" class="ce-icon-btn" id="ceBackBtn" title="Quay lại Ryzen AI">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       </button>
       <span class="ce-brand">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        Nova Code
+        Ryzen Code
       </span>
+      <button type="button" class="ce-icon-btn" id="ceSidebarToggleBtn" title="Thu gọn/mở Sidebar (Ctrl+B)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      </button>
     </div>
     <div class="ce-titlebar-center" id="ceActiveFileLabel">— chưa mở tệp —</div>
     <div class="ce-titlebar-right">
+      <button type="button" class="ce-icon-btn" id="ceCmdPaletteBtn" title="Command Palette (Ctrl+Shift+P)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      </button>
       <button type="button" class="ce-icon-btn" id="ceNewFileBtn" title="Tệp mới">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6M9 15h6"/></svg>
       </button>
@@ -1301,6 +1352,13 @@
   </div>
 
   <div class="ce-body">
+    <!-- Command Palette -->
+    <div class="ce-cmdpalette-overlay" id="ceCmdPaletteOverlay">
+      <div class="ce-cmdpalette">
+        <input type="text" class="ce-cmdpalette-input" id="ceCmdPaletteInput" placeholder="Gõ lệnh… (vd: Tìm tệp, Chạy, Terminal)">
+        <div class="ce-cmdpalette-list" id="ceCmdPaletteList"></div>
+      </div>
+    </div>
     <!-- Activity bar -->
     <div class="ce-activitybar">
       <button type="button" class="ce-act-btn active" data-ce-view="explorer" title="Explorer">
@@ -1309,7 +1367,7 @@
       <button type="button" class="ce-act-btn" data-ce-view="search" title="Tìm kiếm">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
-      <button type="button" class="ce-act-btn" data-ce-view="aichat" title="Nova AI Assistant">
+      <button type="button" class="ce-act-btn" data-ce-view="aichat" title="Ryzen AI Assistant">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
       </button>
     </div>
@@ -1336,11 +1394,11 @@
         <div class="ce-side-header"><span>NOVA AI — SỬA CODE</span></div>
         <div class="ce-aichat-messages" id="ceAiChatMessages">
           <div class="ce-aichat-msg ce-aichat-msg-ai">
-            Chào bạn 👋 Mình là Nova AI trong Nova Code. Nói mình cần sửa gì trong tệp đang mở (hoặc cả dự án), mình sẽ chỉnh code trực tiếp giúp bạn.
+            Chào bạn 👋 Mình là Ryzen AI trong Ryzen Code. Nói mình cần sửa gì trong tệp đang mở (hoặc cả dự án), mình sẽ chỉnh code trực tiếp giúp bạn.
           </div>
         </div>
         <div class="ce-aichat-inputrow">
-          <textarea class="ce-aichat-input" id="ceAiChatInput" rows="2" placeholder="Yêu cầu Nova AI sửa code..."></textarea>
+          <textarea class="ce-aichat-input" id="ceAiChatInput" rows="2" placeholder="Yêu cầu Ryzen AI sửa code..."></textarea>
           <button type="button" class="ce-aichat-send" id="ceAiChatSend" title="Gửi">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
@@ -1352,6 +1410,13 @@
     <div class="ce-editorarea">
       <div class="ce-tabs" id="ceTabs"></div>
       <div class="ce-editorwrap">
+        <div class="ce-findbar" id="ceFindBar">
+          <input type="text" id="ceFindInput" placeholder="Tìm" autocomplete="off">
+          <span class="ce-findbar-count" id="ceFindCount">0/0</span>
+          <button type="button" id="ceFindPrevBtn" title="Trước (Shift+Enter)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>
+          <button type="button" id="ceFindNextBtn" title="Sau (Enter)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button type="button" id="ceFindCloseBtn" title="Đóng (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
         <div class="ce-linenumbers" id="ceLineNumbers"></div>
         <textarea class="ce-textarea" id="ceTextarea" spellcheck="false" placeholder="// Chọn hoặc tạo một tệp để bắt đầu..."></textarea>
         <pre class="ce-highlight" id="ceHighlight"><code id="ceHighlightCode"></code></pre>
@@ -1395,7 +1460,7 @@
 <script type="module">
 import { GoogleGenAI } from "https://esm.run/@google/genai";
 
-const BOT_NAME = "Nova AI";
+const BOT_NAME = "Ryzen AI";
 const DEFAULT_MODEL = "fastrouter-gemini-3.6-flash";
 const SYSTEM_PROMPT = `Bạn tên là "${BOT_NAME}". Nếu người dùng hỏi bạn là ai, bạn dùng model gì, hoặc AI gì, hãy trả lời rằng bạn là "${BOT_NAME}", một trợ lý AI. Đừng nhắc đến Google, Gemini, hay bất kỳ nhà cung cấp mô hình nền tảng nào — đó là chi tiết kỹ thuật nội bộ không cần tiết lộ.
 Nếu người dùng hỏi ai đã tạo ra bạn / lập trình bạn, hãy trả lời rằng người tạo ra bạn là Phạm Xuân Viên, hiện đang học lớp 11B2 tại Trung tâm GDNN-GDTX khu vực 3 Long Khánh, Đồng Nai. Chỉ nhắc chi tiết này khi được hỏi trực tiếp về người tạo, không tự chèn vào các câu trả lời khác.
@@ -1985,7 +2050,7 @@ const FASTROUTER_BASE_URL = 'https://api.fastrouter.ai/api/v1';
 const FASTROUTER_MODEL_MAP = {
   'fastrouter-gemini-3.6-flash': 'google/gemini-3.6-flash',
   'fastrouter-gpt-5.6-sol': 'openai/gpt-5.6-sol',
-  'fastrouter-opus-4.7': 'anthropic/claude-opus-4.7'
+  'fastrouter-opus-4.7': 'moonshotai/kimi-k3'
 };
 function isFastRouterModel(model) {
   return Object.prototype.hasOwnProperty.call(FASTROUTER_MODEL_MAP, model);
@@ -2343,7 +2408,7 @@ input.addEventListener('input', () => {
   const DEFAULT_FILES = {
     'index.html': {
       lang: 'html',
-      content: '<!DOCTYPE html>\n<html lang="vi">\n<head>\n<meta charset="UTF-8">\n<title>Trang của tôi</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Xin chào, Nova Code!</h1>\n  <p>Sửa các tệp bên trái rồi bấm Chạy (▶) để xem Preview.</p>\n  <script src="script.js"><\/script>\n</body>\n</html>\n'
+      content: '<!DOCTYPE html>\n<html lang="vi">\n<head>\n<meta charset="UTF-8">\n<title>Trang của tôi</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Xin chào, Ryzen Code!</h1>\n  <p>Sửa các tệp bên trái rồi bấm Chạy (▶) để xem Preview.</p>\n  <script src="script.js"><\/script>\n</body>\n</html>\n'
     },
     'style.css': {
       lang: 'css',
@@ -2351,11 +2416,11 @@ input.addEventListener('input', () => {
     },
     'script.js': {
       lang: 'javascript',
-      content: 'console.log("Nova Code đã sẵn sàng.");\n\ndocument.querySelector("h1")?.addEventListener("click", () => {\n  alert("Bạn vừa bấm vào tiêu đề!");\n});\n'
+      content: 'console.log("Ryzen Code đã sẵn sàng.");\n\ndocument.querySelector("h1")?.addEventListener("click", () => {\n  alert("Bạn vừa bấm vào tiêu đề!");\n});\n'
     },
     'notes.md': {
       lang: 'markdown',
-      content: '# Ghi chú\n\nĐây là trình soạn thảo giống VS Code, tích hợp ngay trong Nova AI.\n\n- Tạo / xoá tệp ở Explorer bên trái\n- Nhiều tab cùng lúc\n- Terminal giả lập (gõ `help`)\n- Bấm ▶ để chạy & xem Preview (HTML/CSS/JS)\n'
+      content: '# Ghi chú\n\nĐây là trình soạn thảo giống VS Code, tích hợp ngay trong Ryzen AI.\n\n- Tạo / xoá tệp ở Explorer bên trái\n- Nhiều tab cùng lúc\n- Terminal giả lập (gõ `help`)\n- Bấm ▶ để chạy & xem Preview (HTML/CSS/JS)\n'
     }
   };
 
@@ -2611,6 +2676,189 @@ input.addEventListener('input', () => {
   $('ceNewFileBtn').addEventListener('click', promptNewFile);
   $('ceDelFileBtn').addEventListener('click', deleteActiveFile);
 
+  /* ---- Sidebar toggle (giống VS Code Ctrl+B) ---- */
+  const ceSidebarToggleBtn = $('ceSidebarToggleBtn');
+  function toggleSidebar(force) {
+    const collapsed = typeof force === 'boolean' ? force : !ceRoot.classList.contains('sidebar-collapsed');
+    ceRoot.classList.toggle('sidebar-collapsed', collapsed);
+    ceSidebarToggleBtn.classList.toggle('active', !collapsed);
+  }
+  ceSidebarToggleBtn.addEventListener('click', () => toggleSidebar());
+
+  /* ---- Find trong tệp (Ctrl+F, kiểu VS Code) ---- */
+  const ceFindBar = $('ceFindBar');
+  const ceFindInput = $('ceFindInput');
+  const ceFindCount = $('ceFindCount');
+  let ceFindMatches = [];
+  let ceFindIndex = -1;
+
+  function ceFindCompute() {
+    ceFindMatches = [];
+    const q = ceFindInput.value;
+    if (!q) { ceFindCount.textContent = '0/0'; return; }
+    const text = ceTextarea.value;
+    const lower = text.toLowerCase();
+    const ql = q.toLowerCase();
+    let idx = 0;
+    while (true) {
+      const found = lower.indexOf(ql, idx);
+      if (found === -1) break;
+      ceFindMatches.push(found);
+      idx = found + ql.length;
+    }
+    ceFindIndex = ceFindMatches.length ? 0 : -1;
+    ceFindGoto(0);
+  }
+
+  function ceFindGoto(dir) {
+    if (!ceFindMatches.length) { ceFindCount.textContent = '0/0'; return; }
+    if (dir !== 0) {
+      ceFindIndex = (ceFindIndex + dir + ceFindMatches.length) % ceFindMatches.length;
+    }
+    const q = ceFindInput.value;
+    const pos = ceFindMatches[ceFindIndex];
+    ceTextarea.focus();
+    ceTextarea.setSelectionRange(pos, pos + q.length);
+    // cuộn tới vị trí kết quả
+    const before = ceTextarea.value.slice(0, pos);
+    const lineNo = before.split('\n').length;
+    const lineHeight = parseFloat(getComputedStyle(ceTextarea).lineHeight) || 20;
+    ceTextarea.scrollTop = Math.max(0, (lineNo - 4) * lineHeight);
+    syncScroll();
+    ceFindCount.textContent = `${ceFindIndex + 1}/${ceFindMatches.length}`;
+  }
+
+  function openFindBar() {
+    if (ceTextarea.disabled) return;
+    ceFindBar.classList.add('show');
+    ceFindInput.value = ceTextarea.value.slice(ceTextarea.selectionStart, ceTextarea.selectionEnd) || ceFindInput.value;
+    ceFindInput.focus();
+    ceFindInput.select();
+    ceFindCompute();
+  }
+  function closeFindBar() {
+    ceFindBar.classList.remove('show');
+    ceTextarea.focus();
+  }
+  ceFindInput.addEventListener('input', ceFindCompute);
+  ceFindInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); ceFindGoto(e.shiftKey ? -1 : 1); }
+    else if (e.key === 'Escape') { e.preventDefault(); closeFindBar(); }
+  });
+  $('ceFindNextBtn').addEventListener('click', () => ceFindGoto(1));
+  $('ceFindPrevBtn').addEventListener('click', () => ceFindGoto(-1));
+  $('ceFindCloseBtn').addEventListener('click', closeFindBar);
+
+  /* ---- Command Palette (Ctrl+Shift+P, kiểu VS Code) ---- */
+  const ceCmdPaletteOverlay = $('ceCmdPaletteOverlay');
+  const ceCmdPaletteInput = $('ceCmdPaletteInput');
+  const ceCmdPaletteList = $('ceCmdPaletteList');
+  const ICON_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>';
+  const ICON_RUN = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+  const ICON_TERM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>';
+  const ICON_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+  const ICON_SIDEBAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>';
+  const ICON_AI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/></svg>';
+  const ICON_NEW = ICON_FILE;
+  const ICON_DEL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+
+  function ceCommandList() {
+    const cmds = [
+      { name: 'Tệp: Tạo tệp mới', key: '', icon: ICON_NEW, run: promptNewFile },
+      { name: 'Tệp: Xoá tệp đang mở', key: '', icon: ICON_DEL, run: deleteActiveFile },
+      { name: 'Xem: Tìm trong tệp đang mở', key: 'Ctrl+F', icon: ICON_SEARCH, run: openFindBar },
+      { name: 'Xem: Bật/tắt Sidebar', key: 'Ctrl+B', icon: ICON_SIDEBAR, run: () => toggleSidebar() },
+      { name: 'Xem: Bật/tắt Terminal', key: '', icon: ICON_TERM, run: () => $('ceTerminalBtn').click() },
+      { name: 'Xem: Mở Ryzen AI Assistant', key: '', icon: ICON_AI, run: () => document.querySelector('[data-ce-view="aichat"]').click() },
+      { name: 'Xem: Mở Explorer', key: '', icon: ICON_FILE, run: () => document.querySelector('[data-ce-view="explorer"]').click() },
+      { name: 'Xem: Mở Tìm kiếm dự án', key: '', icon: ICON_SEARCH, run: () => document.querySelector('[data-ce-view="search"]').click() },
+      { name: 'Chạy: Preview tệp hiện tại', key: '', icon: ICON_RUN, run: () => $('ceRunBtn').click() },
+    ];
+    Object.keys(ceState.files).sort().forEach((name) => {
+      cmds.push({ name: `Đi tới tệp: ${name}`, key: '', icon: ICON_FILE, run: () => openFile(name) });
+    });
+    return cmds;
+  }
+
+  let ceCmdActive = 0;
+  let ceCmdFiltered = [];
+  function ceCmdRender() {
+    const q = ceCmdPaletteInput.value.trim().toLowerCase();
+    const all = ceCommandList();
+    ceCmdFiltered = q ? all.filter(c => c.name.toLowerCase().includes(q)) : all;
+    ceCmdActive = 0;
+    if (!ceCmdFiltered.length) {
+      ceCmdPaletteList.innerHTML = '<div class="ce-cmdpalette-empty">Không có lệnh phù hợp</div>';
+      return;
+    }
+    ceCmdPaletteList.innerHTML = ceCmdFiltered.map((c, i) =>
+      `<div class="ce-cmdpalette-item${i === 0 ? ' active' : ''}" data-i="${i}">${c.icon}<span class="ce-cmd-name">${escapeHtml(c.name)}</span>${c.key ? `<span class="ce-cmd-key">${c.key}</span>` : ''}</div>`
+    ).join('');
+    ceCmdPaletteList.querySelectorAll('.ce-cmdpalette-item').forEach((el) => {
+      el.addEventListener('click', () => ceCmdRun(+el.dataset.i));
+      el.addEventListener('mouseenter', () => {
+        ceCmdPaletteList.querySelectorAll('.ce-cmdpalette-item').forEach(x => x.classList.remove('active'));
+        el.classList.add('active');
+        ceCmdActive = +el.dataset.i;
+      });
+    });
+  }
+  function ceCmdRun(i) {
+    const cmd = ceCmdFiltered[i];
+    closeCmdPalette();
+    if (cmd) cmd.run();
+  }
+  function openCmdPalette() {
+    ceCmdPaletteOverlay.classList.add('show');
+    ceCmdPaletteInput.value = '';
+    ceCmdRender();
+    setTimeout(() => ceCmdPaletteInput.focus(), 30);
+  }
+  function closeCmdPalette() {
+    ceCmdPaletteOverlay.classList.remove('show');
+  }
+  $('ceCmdPaletteBtn').addEventListener('click', openCmdPalette);
+  ceCmdPaletteOverlay.addEventListener('click', (e) => { if (e.target === ceCmdPaletteOverlay) closeCmdPalette(); });
+  ceCmdPaletteInput.addEventListener('input', ceCmdRender);
+  ceCmdPaletteInput.addEventListener('keydown', (e) => {
+    const items = () => Array.from(ceCmdPaletteList.querySelectorAll('.ce-cmdpalette-item'));
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      ceCmdActive = Math.min(ceCmdActive + 1, ceCmdFiltered.length - 1);
+      items().forEach(x => x.classList.remove('active'));
+      const el = items()[ceCmdActive]; if (el) { el.classList.add('active'); el.scrollIntoView({ block: 'nearest' }); }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      ceCmdActive = Math.max(ceCmdActive - 1, 0);
+      items().forEach(x => x.classList.remove('active'));
+      const el = items()[ceCmdActive]; if (el) { el.classList.add('active'); el.scrollIntoView({ block: 'nearest' }); }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      ceCmdRun(ceCmdActive);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      closeCmdPalette();
+    }
+  });
+
+  // Phím tắt toàn cục trong Ryzen Code: Ctrl+Shift+P, Ctrl+B, Ctrl+F, Esc
+  document.addEventListener('keydown', (e) => {
+    if (!ceRoot.classList.contains('open')) return;
+    const ctrlOrCmd = e.ctrlKey || e.metaKey;
+    if (ctrlOrCmd && e.shiftKey && (e.key === 'P' || e.key === 'p')) {
+      e.preventDefault();
+      ceCmdPaletteOverlay.classList.contains('show') ? closeCmdPalette() : openCmdPalette();
+    } else if (ctrlOrCmd && (e.key === 'b' || e.key === 'B')) {
+      e.preventDefault();
+      toggleSidebar();
+    } else if (ctrlOrCmd && (e.key === 'f' || e.key === 'F') && document.activeElement === ceTextarea) {
+      e.preventDefault();
+      openFindBar();
+    } else if (e.key === 'Escape' && ceFindBar.classList.contains('show')) {
+      closeFindBar();
+    }
+  });
+
   /* ---- Activity bar switching ---- */
   document.querySelectorAll('.ce-act-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -2738,7 +2986,7 @@ input.addEventListener('input', () => {
   });
   $('cePreviewCloseBtn').addEventListener('click', () => cePreviewPanel.classList.remove('open'));
 
-  /* ---- Nova AI mini chat: sửa code trực tiếp trong Nova Code ---- */
+  /* ---- Ryzen AI mini chat: sửa code trực tiếp trong Ryzen Code ---- */
   const ceAiChatMessages = $('ceAiChatMessages');
   const ceAiChatInput = $('ceAiChatInput');
   const ceAiChatSend = $('ceAiChatSend');
@@ -2748,10 +2996,76 @@ input.addEventListener('input', () => {
     return String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   }
 
+  // Màu chấm ngôn ngữ kiểu icon VS Code, theo phần mở rộng/tên ngôn ngữ
+  const CE_LANG_DOT = {
+    js: '#f1e05a', javascript: '#f1e05a', jsx: '#61dafb', ts: '#3178c6', typescript: '#3178c6', tsx: '#3178c6',
+    py: '#3776ab', python: '#3776ab', lua: '#000080', luau: '#00a2ff',
+    java: '#b07219', kt: '#a97bff', kotlin: '#a97bff', swift: '#f05138',
+    c: '#555555', cpp: '#f34b7d', 'c++': '#f34b7d', cs: '#178600', csharp: '#178600',
+    go: '#00add8', golang: '#00add8', rs: '#dea584', rust: '#dea584',
+    php: '#4f5d95', sh: '#89e051', bash: '#89e051', shell: '#89e051',
+    sql: '#e38c00', rb: '#cc342d', ruby: '#cc342d',
+    html: '#e34c26', xml: '#e34c26', css: '#563d7c', scss: '#c6538c',
+    json: '#cbcb41', yaml: '#cb171e', yml: '#cb171e'
+  };
+  const CE_LANG_LABEL = {
+    js: 'JavaScript', javascript: 'JavaScript', jsx: 'JSX', ts: 'TypeScript', typescript: 'TypeScript', tsx: 'TSX',
+    py: 'Python', python: 'Python', lua: 'Lua', luau: 'Luau',
+    java: 'Java', kt: 'Kotlin', kotlin: 'Kotlin', swift: 'Swift',
+    c: 'C', cpp: 'C++', 'c++': 'C++', cs: 'C#', csharp: 'C#',
+    go: 'Go', golang: 'Go', rs: 'Rust', rust: 'Rust',
+    php: 'PHP', sh: 'Shell', bash: 'Bash', shell: 'Shell',
+    sql: 'SQL', rb: 'Ruby', ruby: 'Ruby',
+    html: 'HTML', xml: 'XML', css: 'CSS', scss: 'SCSS',
+    json: 'JSON', yaml: 'YAML', yml: 'YAML'
+  };
+  const CE_COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  const CE_CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+
+  // Render nội dung trả lời của Ryzen AI: markdown nhẹ + code block tô màu như VS Code
+  function ceAiRenderText(text) {
+    const fence = /```([a-zA-Z0-9_+-]*)\s*(?:path=|file=)?([^\n`]*)\n([\s\S]*?)(?:```|$)/g;
+    let html = '', last = 0, m;
+    while ((m = fence.exec(text)) !== null) {
+      const before = text.slice(last, m.index).trim();
+      if (before) html += `<p>${escapeHtmlAi(before).replace(/\n/g, '<br>')}</p>`;
+      const rawLang = (m[1] || '').trim().toLowerCase();
+      const lang = rawLang.split(/\s+/)[0];
+      const code = m[3].replace(/\n$/, '');
+      const label = CE_LANG_LABEL[lang] || (lang ? lang.charAt(0).toUpperCase() + lang.slice(1) : 'Code');
+      const dot = CE_LANG_DOT[lang] || '#888';
+      const hl = (typeof highlight === 'function') ? highlight(code, lang) : escapeHtmlAi(code);
+      html += `<div class="ce-aichat-code"><div class="ce-aichat-code-head">` +
+              `<span class="ce-aichat-code-lang"><span class="ce-aichat-code-dot" style="background:${dot}"></span>${escapeHtmlAi(label)}</span>` +
+              `<button type="button" class="ce-aichat-code-copy" data-ce-copy>${CE_COPY_ICON}<span>Sao chép</span></button>` +
+              `</div><pre><code class="ce-aichat-code-content">${hl}</code></pre></div>`;
+      last = fence.lastIndex;
+      if (fence.lastIndex >= text.length) break;
+    }
+    const rest = text.slice(last).trim();
+    if (rest) html += `<p>${escapeHtmlAi(rest).replace(/\n/g, '<br>')}</p>`;
+    return html || '';
+  }
+
   function ceAiAddMsg(text, cls) {
     const div = document.createElement('div');
     div.className = 'ce-aichat-msg ' + cls;
-    div.innerHTML = escapeHtmlAi(text);
+    if (cls === 'ce-aichat-msg-ai') {
+      div.innerHTML = ceAiRenderText(text) || escapeHtmlAi(text);
+      div.querySelectorAll('[data-ce-copy]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const code = btn.closest('.ce-aichat-code').querySelector('code').textContent;
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.classList.add('copied');
+            btn.innerHTML = CE_CHECK_ICON + '<span>Đã chép</span>';
+            setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = CE_COPY_ICON + '<span>Sao chép</span>'; }, 1500);
+          } catch (_) {}
+        });
+      });
+    } else {
+      div.innerHTML = escapeHtmlAi(text);
+    }
     ceAiChatMessages.appendChild(div);
     ceAiChatMessages.scrollTop = ceAiChatMessages.scrollHeight;
     return div;
@@ -2835,12 +3149,12 @@ input.addEventListener('input', () => {
       return `--- ${n}${isActive ? ' (đang mở)' : ''} ---\n${ceState.files[n].content}`;
     }).join('\n\n');
     if (filesDump.length > 12000) filesDump = filesDump.slice(0, 12000) + '\n...(đã cắt bớt)';
-    return `Bạn là Nova AI, trợ lý sửa code bên trong trình soạn thảo "Nova Code". Bạn đang xem dự án gồm các tệp sau:\n${fileList.join(', ') || '(chưa có tệp nào)'}\n\nNội dung hiện tại của các tệp:\n${filesDump}\n\nKhi người dùng yêu cầu sửa/tạo code, hãy trả lời ngắn gọn bằng tiếng Việt giải thích thay đổi, sau đó với MỖI tệp cần tạo/sửa, đưa ra MỘT khối code đầy đủ (toàn bộ nội dung tệp sau khi sửa, không phải chỉ đoạn diff) theo đúng định dạng:\n\`\`\`ext path=ten-tep.ext\n<toàn bộ nội dung tệp>\n\`\`\`\nLuôn dùng đường dẫn tệp có sẵn trong dự án nếu là sửa tệp cũ. Nếu không cần sửa code, chỉ cần trả lời trò chuyện bình thường, không cần khối code.`;
+    return `Bạn là Ryzen AI, trợ lý sửa code bên trong trình soạn thảo "Ryzen Code". Bạn đang xem dự án gồm các tệp sau:\n${fileList.join(', ') || '(chưa có tệp nào)'}\n\nNội dung hiện tại của các tệp:\n${filesDump}\n\nKhi người dùng yêu cầu sửa/tạo code, hãy trả lời ngắn gọn bằng tiếng Việt giải thích thay đổi, sau đó với MỖI tệp cần tạo/sửa, đưa ra MỘT khối code đầy đủ (toàn bộ nội dung tệp sau khi sửa, không phải chỉ đoạn diff) theo đúng định dạng:\n\`\`\`ext path=ten-tep.ext\n<toàn bộ nội dung tệp>\n\`\`\`\nLuôn dùng đường dẫn tệp có sẵn trong dự án nếu là sửa tệp cũ. Nếu không cần sửa code, chỉ cần trả lời trò chuyện bình thường, không cần khối code.`;
   }
 
   async function ceAiCallModel(userText) {
     const key = getFastRouterApiKey() && isFastRouterModel(getModel()) ? getFastRouterApiKey() : getApiKey();
-    if (!key) throw new Error('Chưa có API key. Vào Cài đặt (⚙️) trong Nova AI để nhập key trước nhé.');
+    if (!key) throw new Error('Chưa có API key. Vào Cài đặt (⚙️) trong Ryzen AI để nhập key trước nhé.');
 
     const sys = ceAiBuildSystemPrompt();
 
@@ -2932,7 +3246,7 @@ input.addEventListener('input', () => {
       renderEditor();
     }
     if (!ceTerminalOutput.children.length) {
-      tlPrint('Nova Code Terminal — gõ "help" để xem danh sách lệnh.', 'ce-tl-info');
+      tlPrint('Ryzen Code Terminal — gõ "help" để xem danh sách lệnh.', 'ce-tl-info');
     }
     // close settings modal if open
     const backdrop = document.getElementById('modalBackdrop');
@@ -2947,7 +3261,11 @@ input.addEventListener('input', () => {
   $('ceBackBtn').addEventListener('click', closeCodeEditor);
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && ceRoot.classList.contains('open')) closeCodeEditor();
+    if (e.key === 'Escape' && ceRoot.classList.contains('open')) {
+      if (ceCmdPaletteOverlay.classList.contains('show')) { closeCmdPalette(); return; }
+      if (ceFindBar.classList.contains('show')) { closeFindBar(); return; }
+      closeCodeEditor();
+    }
   });
 })();
 </script>
