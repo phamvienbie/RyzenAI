@@ -977,7 +977,7 @@
     flex-shrink: 0; width: 220px; background: #252526; border-right: 1px solid #1a1a1a;
     display: flex; flex-direction: column; overflow: hidden;
   }
-  .ce-side-view { display: none; flex-direction: column; height: 100%; min-height: 0; }
+  .ce-side-view { display: none; flex-direction: column; height: 100%; min-height: 0; position: relative; }
   .ce-side-view.active { display: flex; }
   .ce-side-header {
     padding: 10px 14px 6px; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #9d9d9d;
@@ -991,6 +991,11 @@
   .ce-mini-btn:hover { background: #3a3a3c; color: #fff; }
   .ce-project-name { padding: 2px 14px 6px; font-size: 12.5px; font-weight: 700; color: #e3e3e3; flex-shrink: 0; }
   .ce-filetree { flex: 1; overflow: auto; padding-bottom: 10px; }
+  .ce-dropzone { display: none; position: absolute; inset: 0; z-index: 40; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: 12px; color: #cfe3ff; background: rgba(76,141,255,.14); border: 2px dashed #4c8dff; border-radius: 8px; margin: 6px; }
+  .ce-dropzone.show { display: flex; }
+  .ce-imgpreview { flex: 1; display: flex; align-items: center; justify-content: center; background: #1e1e1e; overflow: auto; padding: 20px; box-sizing: border-box; }
+  .ce-imgpreview img { max-width: 100%; max-height: 100%; border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,.4); }
+  .ce-imgpreview-meta { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.6); color: #ccc; font-size: 11px; padding: 4px 10px; border-radius: 6px; }
   .ce-file-item {
     display: flex; align-items: center; gap: 6px; padding: 4px 14px; font-size: 13px; color: #cccccc;
     cursor: pointer; white-space: nowrap; user-select: none;
@@ -1378,12 +1383,15 @@
         <div class="ce-side-header">
           <span>EXPLORER</span>
           <div class="ce-side-actions">
+            <button type="button" class="ce-mini-btn" id="ceUploadFileBtn" title="Tải tệp lên từ máy"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>
             <button type="button" class="ce-mini-btn" id="ceAddFileBtn" title="Tệp mới"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6M9 15h6"/></svg></button>
             <button type="button" class="ce-mini-btn" id="ceDelFileBtn" title="Xoá tệp đang mở"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
           </div>
         </div>
+        <input type="file" id="ceUploadInput" multiple hidden>
         <div class="ce-project-name">NOVA-PROJECT</div>
         <div class="ce-filetree" id="ceFileTree"></div>
+        <div class="ce-dropzone" id="ceDropzone">Thả tệp vào đây để thêm vào dự án</div>
       </div>
       <div class="ce-side-view" id="ceSearchView">
         <div class="ce-side-header"><span>TÌM KIẾM</span></div>
@@ -1420,6 +1428,10 @@
         <div class="ce-linenumbers" id="ceLineNumbers"></div>
         <textarea class="ce-textarea" id="ceTextarea" spellcheck="false" placeholder="// Chọn hoặc tạo một tệp để bắt đầu..."></textarea>
         <pre class="ce-highlight" id="ceHighlight"><code id="ceHighlightCode"></code></pre>
+        <div class="ce-imgpreview" id="ceImgPreview" style="display:none">
+          <img id="ceImgPreviewImg" alt="">
+          <span class="ce-imgpreview-meta" id="ceImgPreviewMeta"></span>
+        </div>
       </div>
       <div class="ce-terminal" id="ceTerminal">
         <div class="ce-terminal-header">
@@ -2050,7 +2062,7 @@ const FASTROUTER_BASE_URL = 'https://api.fastrouter.ai/api/v1';
 const FASTROUTER_MODEL_MAP = {
   'fastrouter-gemini-3.6-flash': 'google/gemini-3.6-flash',
   'fastrouter-gpt-5.6-sol': 'openai/gpt-5.6-sol',
-  'fastrouter-opus-4.7': 'moonshotai/kimi-k3'
+  'fastrouter-opus-4.7': 'anthropic/claude-fable-5.1'
 };
 function isFastRouterModel(model) {
   return Object.prototype.hasOwnProperty.call(FASTROUTER_MODEL_MAP, model);
@@ -2432,7 +2444,9 @@ input.addEventListener('input', () => {
     return JSON.parse(JSON.stringify(DEFAULT_FILES));
   }
   function saveFiles() {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(ceState.files)); } catch (e) {}
+    try { localStorage.setItem(LS_KEY, JSON.stringify(ceState.files)); } catch (e) {
+      alert('Không thể lưu: dự án đã vượt quá dung lượng lưu trữ cục bộ (thường do ảnh quá lớn). Hãy dùng ảnh nhỏ hơn hoặc xoá bớt tệp.');
+    }
   }
 
   const ceState = {
@@ -2464,6 +2478,7 @@ input.addEventListener('input', () => {
     javascript: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 15c.5 1 1.3 1.5 2 1.5s1.3-.5 1.3-1.3c0-2-3.5-1.7-3.5-4 0-1.2 1-2 2.2-2 .9 0 1.5.4 2 1"/></svg>',
     markdown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M6 15V9l3 3 3-3v6M16 15v-6l3 3"/></svg>',
     json: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3a2 2 0 00-2 2v4a2 2 0 01-2 2 2 2 0 012 2v4a2 2 0 002 2M16 3a2 2 0 012 2v4a2 2 0 002 2 2 2 0 00-2 2v4a2 2 0 01-2 2"/></svg>',
+    image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
     default: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>'
   };
 
@@ -2474,8 +2489,10 @@ input.addEventListener('input', () => {
     if (ext === 'js' || ext === 'mjs') return 'javascript';
     if (ext === 'md') return 'markdown';
     if (ext === 'json') return 'json';
+    if (['png','jpg','jpeg','gif','webp','svg','bmp','ico'].includes(ext)) return 'image';
     return 'plaintext';
   }
+  const IMAGE_MIME = { png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', gif:'image/gif', webp:'image/webp', svg:'image/svg+xml', bmp:'image/bmp', ico:'image/x-icon' };
 
   function fileIcon(name) {
     return ICONS[extToLang(name)] || ICONS.default;
@@ -2551,7 +2568,10 @@ input.addEventListener('input', () => {
 
   function renderEditor() {
     const name = ceState.activeFile;
+    const imgPreview = $('ceImgPreview');
     if (!name || !ceState.files[name]) {
+      imgPreview.style.display = 'none';
+      ceTextarea.style.display = '';
       ceTextarea.value = '';
       ceTextarea.disabled = true;
       ceTextarea.placeholder = '// Chọn hoặc tạo một tệp để bắt đầu...';
@@ -2561,8 +2581,22 @@ input.addEventListener('input', () => {
       updateLineNumbers();
       return;
     }
-    ceTextarea.disabled = false;
     const file = ceState.files[name];
+    if (file.lang === 'image') {
+      ceTextarea.style.display = 'none';
+      $('ceHighlight').style.display = 'none';
+      imgPreview.style.display = 'flex';
+      $('ceImgPreviewImg').src = file.content;
+      const sizeKb = file.content ? Math.round((file.content.length * 0.75) / 1024) : 0;
+      $('ceImgPreviewMeta').textContent = `${name} • ~${sizeKb} KB`;
+      ceActiveFileLabel.textContent = name;
+      ceStatusLang.textContent = langLabel(file.lang);
+      return;
+    }
+    imgPreview.style.display = 'none';
+    ceTextarea.style.display = '';
+    $('ceHighlight').style.display = '';
+    ceTextarea.disabled = false;
     ceTextarea.value = file.content;
     ceActiveFileLabel.textContent = name;
     ceStatusLang.textContent = langLabel(file.lang);
@@ -2572,7 +2606,7 @@ input.addEventListener('input', () => {
   }
 
   function langLabel(lang) {
-    return { html: 'HTML', css: 'CSS', javascript: 'JavaScript', markdown: 'Markdown', json: 'JSON', plaintext: 'Plain Text' }[lang] || 'Plain Text';
+    return { html: 'HTML', css: 'CSS', javascript: 'JavaScript', markdown: 'Markdown', json: 'JSON', plaintext: 'Plain Text', image: 'Image' }[lang] || 'Plain Text';
   }
 
   /* ---- Line numbers ---- */
@@ -2675,6 +2709,93 @@ input.addEventListener('input', () => {
   $('ceAddFileBtn').addEventListener('click', promptNewFile);
   $('ceNewFileBtn').addEventListener('click', promptNewFile);
   $('ceDelFileBtn').addEventListener('click', deleteActiveFile);
+
+  /* ---- Upload tệp từ máy (ảnh, .txt, .js, .css, v.v.) ---- */
+  const TEXT_EXTS = ['html','htm','css','js','mjs','json','md','txt','svg','csv','xml','yml','yaml','ts','tsx','jsx'];
+  function readAsText(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsText(file);
+    });
+  }
+  function readAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+  function uniqueFileName(name) {
+    if (!ceState.files[name]) return name;
+    const dot = name.lastIndexOf('.');
+    const base = dot > -1 ? name.slice(0, dot) : name;
+    const ext = dot > -1 ? name.slice(dot) : '';
+    let i = 2;
+    while (ceState.files[`${base} (${i})${ext}`]) i++;
+    return `${base} (${i})${ext}`;
+  }
+  async function handleExternalFiles(fileList) {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    let lastName = null;
+    for (const f of files) {
+      const ext = (f.name.split('.').pop() || '').toLowerCase();
+      const clean = uniqueFileName(f.name.trim());
+      const lang = extToLang(clean);
+      try {
+        let content;
+        if (lang === 'image') {
+          content = await readAsDataURL(f);
+        } else if (TEXT_EXTS.includes(ext) || f.type.startsWith('text/') || !f.type) {
+          content = await readAsText(f);
+        } else {
+          // Tệp nhị phân không xác định (vd .zip, .pdf): lưu dạng data URL, xem như "Binary"
+          content = await readAsDataURL(f);
+        }
+        ceState.files[clean] = { lang, content };
+        lastName = clean;
+      } catch (err) {
+        alert(`Không đọc được tệp "${f.name}": ${err.message || err}`);
+      }
+    }
+    saveFiles();
+    renderFileTree();
+    if (lastName) openFile(lastName);
+    if (files.length > 1) tlPrint(`Đã thêm ${files.length} tệp vào dự án.`, 'ce-tl-info');
+  }
+
+  $('ceUploadFileBtn').addEventListener('click', () => $('ceUploadInput').click());
+  $('ceUploadInput').addEventListener('change', (e) => {
+    handleExternalFiles(e.target.files);
+    e.target.value = '';
+  });
+
+  // Kéo thả tệp từ máy vào Explorer
+  const ceExplorerView = $('ceExplorerView');
+  const ceDropzone = $('ceDropzone');
+  let ceDragDepth = 0;
+  ceExplorerView.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    ceDragDepth++;
+    ceDropzone.classList.add('show');
+  });
+  ceExplorerView.addEventListener('dragover', (e) => e.preventDefault());
+  ceExplorerView.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    ceDragDepth = Math.max(0, ceDragDepth - 1);
+    if (ceDragDepth === 0) ceDropzone.classList.remove('show');
+  });
+  ceExplorerView.addEventListener('drop', (e) => {
+    e.preventDefault();
+    ceDragDepth = 0;
+    ceDropzone.classList.remove('show');
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+      handleExternalFiles(e.dataTransfer.files);
+    }
+  });
 
   /* ---- Sidebar toggle (giống VS Code Ctrl+B) ---- */
   const ceSidebarToggleBtn = $('ceSidebarToggleBtn');
