@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ryzen AI</title>
+<meta name="theme-color" content="#131314">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
@@ -1136,6 +1137,27 @@
     .ce-previewpanel.open { width: 100vw; position: absolute; inset: 44px 0 0 0; z-index: 40; }
     .ce-titlebar-center { max-width: 30vw; }
   }
+
+/* ===== Ryzen UI v2 ===== */
+*{scrollbar-width:thin;scrollbar-color:#4a4b4d transparent}
+*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-thumb{background:#4a4b4d;border-radius:8px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{transition:background .15s,color .15s,transform .1s}button:active{transform:scale(.96)}
+.ce-tt{padding:0 10px;cursor:pointer;opacity:.6;font-size:11px;letter-spacing:.06em;display:flex;align-items:center;gap:5px;border-bottom:1px solid transparent}
+.ce-tt.active{opacity:1;border-bottom-color:var(--accent)}
+.ce-tt b,.ws-tab b{background:#f14c4c;color:#fff;border-radius:8px;padding:0 5px;font-size:10px;font-weight:600}.ce-tt b:empty,.ws-tab b:empty{display:none}
+.ce-prevbar{margin-left:auto;margin-right:6px;display:flex;gap:2px;align-items:center}
+.rz-pb,.rz-fb{background:none;border:1px solid transparent;color:#9aa0a6;border-radius:5px;font:600 11px inherit;font-family:inherit;padding:2px 7px;cursor:pointer}
+.rz-pb:hover,.rz-fb:hover{background:rgba(255,255,255,.08);color:#fff}.rz-pb.active{color:var(--accent);border-color:rgba(168,199,250,.4)}
+.ce-previewpanel[data-dev=tablet] .ce-preview-frame{width:768px!important;max-width:100%;margin:0 auto;display:block}
+.ce-previewpanel[data-dev=mobile] .ce-preview-frame{width:375px!important;max-width:100%;margin:0 auto;display:block}
+.rz-cl{display:flex;gap:8px;padding:2px 8px;font:12px/1.55 ui-monospace,Consolas,monospace;border-bottom:1px solid rgba(255,255,255,.05);white-space:pre-wrap;word-break:break-word;color:#d4d4d4}
+.rz-cl i{color:#6a6a6a;font-style:normal;flex:none}
+.rz-cl-warn{color:#e5c07b;background:rgba(229,192,123,.08)}.rz-cl-error{color:#f48771;background:rgba(244,135,113,.09)}
+.rz-cl-info{color:#7aa2f7}.rz-cl-result{color:#7ee787}.rz-cl-cmd{color:#9aa0a6}
+#wsConsoleOut{background:#0d0e10;min-height:100%;padding:4px 0}
+#ceFindBar{flex-wrap:wrap;max-width:min(520px,94%)}
+#ceReplaceInput{flex:1;min-width:120px;background:rgba(255,255,255,.06);border:1px solid #3c3c3c;border-radius:5px;color:inherit;padding:4px 8px;font:inherit;font-size:12px}
 </style>
 </head>
 <body>
@@ -1171,6 +1193,8 @@
         <option value="fastrouter-opus-4.7">Lunar Astal 2</option>
       </select>
     </div>
+    <button class="icon-btn" id="newChatBtn" title="Cuộc trò chuyện mới"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="icon-btn" id="openEditorQuick" title="Mở Ryzen Code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
     <button class="icon-btn" id="openSettings" title="Cài đặt">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
@@ -1226,16 +1250,19 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       Preview
     </button>
+  <button type="button" class="ws-tab" data-ws-tab="console">Console <b id="wsConBadge"></b></button>
   </div>
   <div class="ws-body">
     <div class="ws-pane active" id="wsCodePane"><pre><code id="wsCodeContent"></code></pre></div>
     <div class="ws-pane" id="wsPreviewPane"></div>
+    <div class="ws-pane" id="wsConsolePane"><div id="wsConsoleOut"></div></div>
   </div>
   <div class="ws-footer">
     <button type="button" class="ws-footer-btn" id="wsCopyBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
       Sao chép
     </button>
+    <button type="button" class="ws-footer-btn" id="wsEditorBtn">Mở trong Ryzen Code</button>
     <button type="button" class="ws-footer-btn primary" id="wsRunBtn">
       <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       Chạy Preview
@@ -1435,12 +1462,13 @@
       </div>
       <div class="ce-terminal" id="ceTerminal">
         <div class="ce-terminal-header">
-          <span>TERMINAL</span>
+          <div style="display:flex;gap:2px;align-self:stretch"><span class="ce-tt active" data-tt="term">TERMINAL</span><span class="ce-tt" data-tt="console">CONSOLE <b id="ceConBadge"></b></span></div>
           <button type="button" class="ce-mini-btn" id="ceTerminalCloseBtn">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
         <div class="ce-terminal-output" id="ceTerminalOutput"></div>
+        <div class="ce-terminal-output" id="ceConsoleOutput" style="display:none"></div>
         <div class="ce-terminal-input-row">
           <span class="ce-prompt">$</span>
           <input type="text" class="ce-terminal-input" id="ceTerminalInput" autocomplete="off" placeholder="Nhập lệnh (help để xem danh sách)">
@@ -1452,6 +1480,7 @@
     <div class="ce-previewpanel" id="cePreviewPanel">
       <div class="ce-preview-header">
         <span>PREVIEW</span>
+        <div class="ce-prevbar"><button class="rz-pb active" data-dev="full" title="Toàn khung">PC</button><button class="rz-pb" data-dev="tablet" title="Tablet 768px">768</button><button class="rz-pb" data-dev="mobile" title="Điện thoại 375px">375</button><button class="rz-pb" id="cePrevRefresh" title="Tải lại">↻</button><button class="rz-pb" id="cePrevExternal" title="Mở tab mới">↗</button><button class="rz-pb active" id="cePrevLive" title="Tự tải lại khi sửa code">Live</button></div>
         <button type="button" class="ce-mini-btn" id="cePreviewCloseBtn">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -1995,7 +2024,29 @@ function setWsTab(tab) {
   wsTabs.forEach(t => t.classList.toggle('active', t.dataset.wsTab === tab));
   wsCodePane.classList.toggle('active', tab === 'code');
   document.getElementById('wsPreviewPane').classList.toggle('active', tab === 'preview');
+  document.getElementById('wsConsolePane').classList.toggle('active', tab === 'console');
 }
+
+
+window.highlight = highlight; // để khung chat AI trong Ryzen Code tô màu code
+const wsConOut = document.getElementById('wsConsoleOut'), wsConBadge = document.getElementById('wsConBadge');
+let wsErr = 0;
+function withBridge(doc) {
+  wsConOut.innerHTML = ''; wsErr = 0; wsConBadge.textContent = '';
+  const B = window.RZ_BRIDGE || '';
+  return /<head[^>]*>/i.test(doc) ? doc.replace(/<head[^>]*>/i, (m) => m + B) : B + doc;
+}
+window.addEventListener('message', (e) => {
+  const d = e.data, fr = document.getElementById('wsPreviewFrame');
+  if (!d || !d.ryzenConsole || !fr || e.source !== fr.contentWindow) return;
+  window.rzConLine(wsConOut, d.t, d.a);
+  if (d.t === 'error') wsConBadge.textContent = ++wsErr;
+});
+document.getElementById('wsEditorBtn').addEventListener('click', () => {
+  const ext = FILE_EXT[wsCurrentLang] || 'txt';
+  window.RyzenCode.importCode((ext === 'html' ? 'index' : 'main') + '.' + ext, wsCurrentCode);
+  closeWorkspace();
+});
 
 function buildPreview() {
   wsPreviewPane.innerHTML = '';
@@ -2006,7 +2057,7 @@ function buildPreview() {
     iframe.id = 'wsPreviewFrame';
     iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-modals allow-popups');
     wsPreviewPane.appendChild(iframe);
-    iframe.srcdoc = wsCurrentCode;
+    iframe.srcdoc = withBridge(wsCurrentCode);
     return;
   }
   if (JS_LANGS.has(lang) || CSS_LANGS.has(lang)) {
@@ -2017,7 +2068,7 @@ function buildPreview() {
     const wrapped = CSS_LANGS.has(lang)
       ? `<!doctype html><html><head><style>${wsCurrentCode}</style></head><body><p style="font-family:sans-serif;color:#333;padding:16px">Xem trước CSS — chưa có HTML để áp dụng, đây là khung mẫu.</p></body></html>`
       : `<!doctype html><html><head><style>body{font-family:ui-sans-serif,system-ui,sans-serif;padding:16px;color:#222}</style></head><body><div id="root"></div><scr` + `ipt>try{${wsCurrentCode}}catch(e){document.body.innerHTML='<pre style="color:#c0392b;white-space:pre-wrap">'+e+'</pre>';}</scr` + `ipt></body></html>`;
-    iframe.srcdoc = wrapped;
+    iframe.srcdoc = withBridge(wrapped);
     return;
   }
   wsPreviewPane.innerHTML = `<div class="ws-preview-empty">Ngôn ngữ này chưa hỗ trợ chạy Preview trực tiếp.<br>Bạn có thể xem code ở tab Code.</div>`;
@@ -2358,6 +2409,16 @@ function createLiveBotRow() {
   };
 }
 
+
+document.getElementById('openEditorQuick').addEventListener('click', () => document.getElementById('openCodeEditorBtn').click());
+document.getElementById('newChatBtn').addEventListener('click', () => {
+  if (document.getElementById('typingRow') || document.querySelector('.think-box.live')) return;
+  history.length = 0; frHistory.length = 0;
+  threadEl.innerHTML = ''; emptyState.style.display = '';
+  pendingAttachments = []; renderAttachPreview();
+  input.value = ''; input.style.height = 'auto'; updateSendState(); input.focus();
+});
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const text = input.value.trim();
@@ -2668,15 +2729,6 @@ input.addEventListener('input', () => {
       ceStatusSaved.textContent = 'Đã lưu';
     }, 400);
   });
-  ceTextarea.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const s = ceTextarea.selectionStart, en = ceTextarea.selectionEnd;
-      ceTextarea.value = ceTextarea.value.slice(0, s) + '  ' + ceTextarea.value.slice(en);
-      ceTextarea.selectionStart = ceTextarea.selectionEnd = s + 2;
-      ceTextarea.dispatchEvent(new Event('input'));
-    }
-  });
   ['keyup', 'click'].forEach(ev => ceTextarea.addEventListener(ev, updateCursorStatus));
   function updateCursorStatus() {
     const val = ceTextarea.value.slice(0, ceTextarea.selectionStart);
@@ -2838,7 +2890,7 @@ input.addEventListener('input', () => {
     }
     const q = ceFindInput.value;
     const pos = ceFindMatches[ceFindIndex];
-    ceTextarea.focus();
+    if (dir !== 0) ceTextarea.focus();
     ceTextarea.setSelectionRange(pos, pos + q.length);
     // cuộn tới vị trí kết quả
     const before = ceTextarea.value.slice(0, pos);
@@ -3023,13 +3075,20 @@ input.addEventListener('input', () => {
     ceTerminalOutput.scrollTop = ceTerminalOutput.scrollHeight;
   }
   function runTerminalCommand(cmd) {
+    if (ceTTMode === 'console') {
+      cmd = cmd.trim(); if (!cmd) return;
+      if (cmd === 'clear') return clClear();
+      clPrint('cmd', cmd);
+      if (!cePreviewPanel.classList.contains('open')) return clPrint('warn', 'Chưa có Preview đang chạy. Bấm ▶ để chạy.');
+      cePreviewFrame.contentWindow.postMessage({ ryzenEval: cmd }, '*'); return;
+    }
     tlPrint('$ ' + cmd, 'ce-tl-cmd');
     const [command, ...args] = cmd.trim().split(/\s+/);
     switch (command) {
       case '':
         break;
       case 'help':
-        tlPrint('Lệnh khả dụng: ls, cat <tệp>, clear, run, node <tệp.js>, echo <text>', 'ce-tl-info');
+        tlPrint('Lệnh khả dụng: ls, cat <tệp>, touch <tệp>, rm <tệp>, clear, run, console, node <tệp.js>, echo <text>', 'ce-tl-info');
         break;
       case 'ls':
         tlPrint(Object.keys(ceState.files).sort().join('  '));
@@ -3044,6 +3103,14 @@ input.addEventListener('input', () => {
       case 'echo':
         tlPrint(args.join(' '));
         break;
+      case 'touch':
+        if (!args[0]) { tlPrint('touch: thiếu tên tệp', 'ce-tl-err'); break; }
+        if (!ceState.files[args[0]]) { ceState.files[args[0]] = { lang: extToLang(args[0]), content: '' }; saveFiles(); renderFileTree(); }
+        openFile(args[0]); break;
+      case 'rm':
+        if (!args[0] || !ceState.files[args[0]]) { tlPrint(`rm: không tìm thấy '${args[0] || ''}'`, 'ce-tl-err'); break; }
+        delete ceState.files[args[0]]; closeTab(args[0]); saveFiles(); renderFileTree(); tlPrint('Đã xoá ' + args[0], 'ce-tl-info'); break;
+      case 'console': ceSetTT('console'); break;
       case 'run':
         buildAndRunPreview();
         tlPrint('Đang chạy Preview…', 'ce-tl-info');
@@ -3080,30 +3147,157 @@ input.addEventListener('input', () => {
   });
   $('ceTerminalCloseBtn').addEventListener('click', () => ceTerminal.classList.remove('open'));
 
-  /* ---- Run / Preview ---- */
-  function buildAndRunPreview() {
-    // Ưu tiên tệp .html đang mở (workspace của tệp đó); nếu không, dùng index.html của dự án.
-    const activeIsHtml = ceState.activeFile && ceState.activeFile.endsWith('.html') && ceState.files[ceState.activeFile];
-    const entryName = activeIsHtml ? ceState.activeFile : (ceState.files['index.html'] ? 'index.html' : null);
-    const html = entryName ? ceState.files[entryName].content : null;
-    cePreviewPanel.classList.add('open');
-    if (html) {
-      let doc = html;
-      if (ceState.files['style.css']) {
-        doc = doc.replace(/<link[^>]*href=["']style\.css["'][^>]*>/i, `<style>${ceState.files['style.css'].content}<\/style>`);
-      }
-      if (ceState.files['script.js']) {
-        doc = doc.replace(/<script[^>]*src=["']script\.js["'][^>]*>\s*<\/script>/i, `<script>${ceState.files['script.js'].content}<\/script>`);
-      }
-      cePreviewFrame.srcdoc = doc;
-    } else {
-      cePreviewFrame.srcdoc = '<body style="font-family:sans-serif;padding:20px;color:#555">Không tìm thấy tệp .html để chạy Preview.</body>';
-    }
+  /* ---- Run / Preview + Console ---- */
+  let ceLastEntry = 'index.html', ceLastDoc = '', ceLive = true, ceLiveT, ceTTMode = 'term', conErr = 0;
+  const conOut = $('ceConsoleOutput'), conBadge = $('ceConBadge');
+  window.RZ_BRIDGE = `<script>(function(){var P=function(t,a){try{parent.postMessage({ryzenConsole:1,t:t,a:a},'*')}catch(e){}};var f=function(x){if(x instanceof Error)return x.stack||String(x);if(x&&typeof x==='object'){try{return JSON.stringify(x,null,2)}catch(e){}}return String(x)};['log','info','warn','error','debug'].forEach(function(k){var o=console[k];console[k]=function(){P(k==='debug'?'log':k,[].map.call(arguments,f).join(' '));o.apply(console,arguments)}});addEventListener('error',function(e){P('error',e.message+(e.lineno?' (dòng '+e.lineno+')':''))});addEventListener('unhandledrejection',function(e){P('error','Promise bị từ chối: '+f(e.reason))});addEventListener('message',function(e){if(e.data&&e.data.ryzenEval!=null){try{P('result',f((0,eval)(e.data.ryzenEval)))}catch(x){P('error',String(x))}}})})()<\/script>`;
+  window.rzConLine = function (box, t, text) {
+    const d = document.createElement('div');
+    d.className = 'rz-cl rz-cl-' + t;
+    const ts = document.createElement('i'); ts.textContent = new Date().toTimeString().slice(0, 8);
+    const sp = document.createElement('span'); sp.textContent = (t === 'cmd' ? '› ' : t === 'result' ? '← ' : '') + text;
+    d.append(ts, sp); box.appendChild(d);
+    while (box.children.length > 500) box.firstChild.remove();
+    box.scrollTop = box.scrollHeight;
+  };
+  function clPrint(t, text) { rzConLine(conOut, t, text); if (t === 'error' && ceTTMode !== 'console') conBadge.textContent = ++conErr; }
+  function clClear() { conOut.innerHTML = ''; conErr = 0; conBadge.textContent = ''; }
+  function ceSetTT(m) {
+    ceTTMode = m;
+    document.querySelectorAll('.ce-tt').forEach(b => b.classList.toggle('active', b.dataset.tt === m));
+    ceTerminalOutput.style.display = m === 'term' ? '' : 'none';
+    conOut.style.display = m === 'console' ? '' : 'none';
+    ceTerminalInput.placeholder = m === 'console' ? 'Chạy JavaScript trong Preview…' : 'Nhập lệnh (help để xem danh sách)';
+    document.querySelector('.ce-prompt').textContent = m === 'console' ? '›' : '$';
+    if (m === 'console') { conErr = 0; conBadge.textContent = ''; }
   }
-  $('ceRunBtn').addEventListener('click', () => {
+  document.querySelectorAll('.ce-tt').forEach(b => b.addEventListener('click', () => ceSetTT(b.dataset.tt)));
+  window.addEventListener('message', (e) => {
+    const d = e.data;
+    if (d && d.ryzenConsole && e.source === cePreviewFrame.contentWindow) clPrint(d.t, d.a);
+  });
+
+  function inlineProject(doc) {
+    const F = ceState.files;
+    doc = doc.replace(/<link[^>]*href=["']([^"']+)["'][^>]*>/gi, (m, h) => F[h] && F[h].lang === 'css' ? '<style>' + F[h].content + '</style>' : m);
+    doc = doc.replace(/<script([^>]*?)src=["']([^"']+)["']([^>]*)>\s*<\/script>/gi, (m, a, src) => F[src] && F[src].lang === 'javascript' ? '<script>' + F[src].content.replace(/<\/script/gi, '<\\/script') + '<\/script>' : m);
+    doc = doc.replace(/(src|href)=["']([^"']+)["']/gi, (m, a, p) => F[p] && F[p].lang === 'image' ? a + '="' + F[p].content + '"' : m);
+    return doc;
+  }
+  function buildAndRunPreview() {
+    const F = ceState.files;
+    const activeIsHtml = ceState.activeFile && /\.html?$/i.test(ceState.activeFile) && F[ceState.activeFile];
+    const entry = activeIsHtml ? ceState.activeFile : (F['index.html'] ? 'index.html' : null);
+    ceLastEntry = entry || 'index.html';
+    cePreviewPanel.classList.add('open');
+    cePreviewFrame.setAttribute('sandbox', 'allow-scripts allow-modals allow-forms allow-popups');
+    clClear();
+    let doc = entry ? inlineProject(F[entry].content) : '<body style="font-family:sans-serif;padding:20px;color:#555">Không tìm thấy tệp .html để chạy Preview.</body>';
+    ceLastDoc = doc;
+    doc = /<head[^>]*>/i.test(doc) ? doc.replace(/<head[^>]*>/i, (m) => m + window.RZ_BRIDGE) : window.RZ_BRIDGE + doc;
+    cePreviewFrame.srcdoc = doc;
+    clPrint('info', '▶ ' + ceLastEntry);
+    return entry;
+  }
+  ceTextarea.addEventListener('input', () => {
+    if (ceLive && cePreviewPanel.classList.contains('open')) { clearTimeout(ceLiveT); ceLiveT = setTimeout(buildAndRunPreview, 700); }
+  });
+  document.querySelectorAll('[data-dev]').forEach(b => b.addEventListener('click', () => {
+    cePreviewPanel.dataset.dev = b.dataset.dev;
+    document.querySelectorAll('[data-dev]').forEach(x => x.classList.toggle('active', x === b));
+  }));
+  $('cePrevRefresh').addEventListener('click', buildAndRunPreview);
+  $('cePrevExternal').addEventListener('click', () => window.open(URL.createObjectURL(new Blob([ceLastDoc], { type: 'text/html' })), '_blank'));
+  $('cePrevLive').addEventListener('click', (e) => { ceLive = !ceLive; e.currentTarget.classList.toggle('active', ceLive); });
+
+  /* ---- Soạn code thông minh ---- */
+  function ins(s, e, text, cs, ce) {
+    ceTextarea.focus(); ceTextarea.setSelectionRange(s, e);
+    if (!document.execCommand('insertText', false, text)) {
+      const v = ceTextarea.value; ceTextarea.value = v.slice(0, s) + text + v.slice(e);
+      ceTextarea.dispatchEvent(new Event('input'));
+    }
+    ceTextarea.setSelectionRange(cs, ce);
+  }
+  const PAIRS = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' };
+  const CMT = { javascript: ['// ', ''], css: ['/* ', ' */'], html: ['<!-- ', ' -->'], markdown: ['<!-- ', ' -->'] };
+  ceTextarea.addEventListener('keydown', (e) => {
+    const v = ceTextarea.value, s = ceTextarea.selectionStart, en = ceTextarea.selectionEnd, mod = e.ctrlKey || e.metaKey;
+    const ls0 = (p) => p === 0 ? 0 : v.lastIndexOf('\n', p - 1) + 1;
+    const lang = ceState.activeFile && ceState.files[ceState.activeFile] ? ceState.files[ceState.activeFile].lang : 'plaintext';
+    if (mod && e.key === 's') { e.preventDefault(); saveFiles(); ceStatusSaved.textContent = 'Đã lưu'; return; }
+    if (mod && e.key === 'Enter') { e.preventDefault(); $('ceRunBtn').click(); return; }
+    if (e.key === 'F3') { e.preventDefault(); ceFindGoto(e.shiftKey ? -1 : 1); return; }
+    if (mod && e.key === '/') {
+      e.preventDefault();
+      const c = CMT[lang]; if (!c) return;
+      const ls = ls0(s); let le = v.indexOf('\n', en); if (le < 0) le = v.length;
+      const lines = v.slice(ls, le).split('\n'), mk = c[0].trim();
+      const all = lines.every(l => !l.trim() || l.trim().startsWith(mk));
+      const txt = lines.map(l => {
+        if (!l.trim()) return l;
+        const ind = l.match(/^\s*/)[0], body = l.slice(ind.length);
+        return all ? ind + body.slice(mk.length).replace(/^ /, '').replace(/ ?(\*\/|-->)$/, '') : ind + c[0] + body + c[1];
+      }).join('\n');
+      ins(ls, le, txt, ls, ls + txt.length); return;
+    }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (s !== en || e.shiftKey) {
+        const ls = ls0(s), lines = v.slice(ls, en).split('\n');
+        const out = e.shiftKey ? lines.map(l => l.replace(/^( {1,2}|\t)/, '')) : lines.map(l => '  ' + l);
+        const txt = out.join('\n');
+        ins(ls, en, txt, e.shiftKey ? Math.max(ls, s - (lines[0].length - out[0].length)) : s + 2, ls + txt.length);
+      } else ins(s, en, '  ', s + 2, s + 2);
+      return;
+    }
+    if (e.key === 'Enter' && !mod && !e.shiftKey) {
+      e.preventDefault();
+      const ls = ls0(s), ind = v.slice(ls, s).match(/^\s*/)[0];
+      if (PAIRS[v[s - 1]] && PAIRS[v[s - 1]] === v[en] && ')]}'.includes(v[en])) {
+        const p = s + 1 + ind.length + 2; ins(s, en, '\n' + ind + '  \n' + ind, p, p);
+      } else {
+        const t = '\n' + ind + (/[{(\[]\s*$/.test(v.slice(ls, s)) ? '  ' : ''); ins(s, en, t, s + t.length, s + t.length);
+      }
+      return;
+    }
+    if (!mod && !e.altKey && e.key.length === 1) {
+      if (s === en && ')]}"\'`'.includes(e.key) && v[s] === e.key) { e.preventDefault(); ceTextarea.setSelectionRange(s + 1, s + 1); return; }
+      if (PAIRS[e.key]) {
+        if (s !== en) { e.preventDefault(); ins(s, en, e.key + v.slice(s, en) + PAIRS[e.key], s + 1, en + 1); return; }
+        if ('"\'`'.includes(e.key) && /\w/.test(v[s - 1] || '')) return;
+        e.preventDefault(); ins(s, en, e.key + PAIRS[e.key], s + 1, s + 1);
+      }
+    }
+  });
+
+  /* ---- Tìm & Thay thế ---- */
+  const repIn = document.createElement('input'); repIn.id = 'ceReplaceInput'; repIn.placeholder = 'Thay bằng'; repIn.autocomplete = 'off';
+  const mkBtn = (t, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'rz-fb'; b.textContent = t; b.addEventListener('click', fn); return b; };
+  function repOne() {
+    const q = ceFindInput.value; if (!q || ceFindIndex < 0) return;
+    const p = ceFindMatches[ceFindIndex]; ins(p, p + q.length, repIn.value, p + repIn.value.length, p + repIn.value.length); ceFindCompute();
+  }
+  function repAll() {
+    const q = ceFindInput.value; if (!q) return;
+    const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    ins(0, ceTextarea.value.length, ceTextarea.value.replace(re, () => repIn.value), 0, 0); ceFindCompute();
+  }
+  repIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); repOne(); } else if (e.key === 'Escape') closeFindBar(); });
+  ceFindBar.append(repIn, mkBtn('Thay', repOne), mkBtn('Tất cả', repAll));
+
+  /* ---- Cầu nối từ khung chat: mở code trong Ryzen Code ---- */
+  window.RyzenCode = {
+    importCode(name, content) {
+      name = uniqueFileName(name);
+      ceState.files[name] = { lang: extToLang(name), content };
+      saveFiles(); renderFileTree(); openCodeEditor(); openFile(name); return name;
+    }
+  };
+    $('ceRunBtn').addEventListener('click', () => {
     buildAndRunPreview();
     if (!ceTerminal.classList.contains('open')) ceTerminal.classList.add('open');
-    tlPrint('▶ Đang chạy index.html trong Preview…', 'ce-tl-info');
+    ceSetTT('console');
   });
   $('cePreviewCloseBtn').addEventListener('click', () => cePreviewPanel.classList.remove('open'));
 
